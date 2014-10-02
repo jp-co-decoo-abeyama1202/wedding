@@ -1,0 +1,59 @@
+#update
+yum update
+
+
+#rpm
+rpm -ihv http://ftp.riken.jp/Linux/fedora/epel/6/x86_64/epel-release-6-8.noarch.rpm
+rpm -ihv http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
+rpm -ihv http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm
+
+#nginx install
+yum install nginx
+
+#mysql
+yum --enablerepo=remi install mysql-server
+
+#php
+yum install patchwork/utf8
+yum -y install --enablerepo=remi gd-last
+
+yum install php php-mysql php-mcrypt php-gd php-mbstring php-fpm php-xml --enablerepo=remi-php55
+
+
+#composer / Laravel
+cd
+curl -sS https://getcomposer.org/installer | php
+mv composer.phar /usr/local/bin/composer
+cd /home/homepage/html/public/
+composer create-project laravel/laravel laravel --prefer-dest
+
+
+
+#####設定ファイル
+/etc/nginx/conf.d/default.conf
+/etc/php-fpm.d/www.conf
+
+#####エラーログ
+/var/log/nginx/web.error.log
+
+
+#起動
+service nginx start
+service php-fpm start
+service mysqld start
+
+#自動起動登録
+chkconfig --add nginx
+chkconfig nginx on
+chkconfig --add php-fpm
+chkconfig php-fpm on
+chkconfig --add mysqld
+chkconfig mysqld on
+
+#よく使うやつ
+#Class更新
+cd /home/homepage/html/wedding
+composer dump-autoload
+
+#ログ閲覧
+tail -f /var/log/nginx/web.error.log
