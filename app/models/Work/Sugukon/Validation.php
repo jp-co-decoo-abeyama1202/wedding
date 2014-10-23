@@ -17,7 +17,7 @@ class WorkSugukonValidation {
      * @param type $data
      * @return type
      */
-    public static function getAllValidation($keys=array())
+    public static function getAllValidation($keys=array(),$rejects=array())
     {
         $hour = '8,9,10,11,12,13,14,15,16,17,18,19,20,21,22';
         $min = '0,10,20,30,40,50';
@@ -49,6 +49,11 @@ class WorkSugukonValidation {
         $v["reserve_time_fix[end][hour]"] = array('numeric','in:'.$hour);
         $v["reserve_time_fix[end][minute]"] = array('numeric','in:0,30');
         
+        foreach($rejects as $r) {
+            if(isset($v[$r])) {
+                unset($v[$r]);
+            }
+        }
         if(!$keys) {
             return $v;
         }

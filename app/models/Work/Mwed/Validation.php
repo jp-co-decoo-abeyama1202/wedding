@@ -64,11 +64,9 @@ class WorkMwedValidation {
             $v["dt_ed_min$i"] = array('numeric','in:'.$min);
         }
         
-        if($rejects) {
-            foreach($rejects as $r) {
-                if(isset($v[$r])) {
-                    unset($v[$r]);
-                }
+        foreach($rejects as $r) {
+            if(isset($v[$r])) {
+                unset($v[$r]);
             }
         }
         

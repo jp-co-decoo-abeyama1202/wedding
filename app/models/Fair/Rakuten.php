@@ -11,6 +11,17 @@
  *
  * @author admin-97
  */
-class FairRakuten extends FairSite {
+class FairRakuten extends FairSite 
+{
     //put your code here
+    public function contents()
+    {
+        return $this->hasMany('FairRakutenContent');
+    }
+    
+    public function tokutens()
+    {
+        return $this->hasMany('FairRakutenTokuten');
+    }
+    
 }

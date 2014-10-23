@@ -1,49 +1,58 @@
-<header class="header">
-    <a href="{{ URL::to('/') }}" class="logo">
-        Wedding <small>administration</small>
-    </a>
-    <!-- Header Navbar: style can be found in header.less -->
-    <nav class="navbar navbar-static-top" role="navigation">
-        <div class="navbar-right" style="padding-top:3px;">
-            <ul class="nav navbar-nav">
-                <li class="treeview">
-                    <a href="#">
-                        <i class="fa fa-folder"></i> <span>各種情報</span>
-                        <i class="fa fa-angle-left pull-right"></i>
-                    </a>
-                    <ul class="treeview-menu">
-                        <li><a href="#"><i class="fa fa-angle-double-right"></i> フェア一覧</a></li>
-                        <li><a href="#"><i class="fa fa-angle-double-right"></i> フェア登録</a></li>
-                        <li><a href="#"><i class="fa fa-angle-double-right"></i> 画像一覧</a></li>
-                        <li><a href="#"><i class="fa fa-angle-double-right"></i> 画像登録</a></li>
-                        <li><a href="#"><i class="fa fa-angle-double-right"></i> 特典一覧</a></li>
-                        <li><a href="#"><i class="fa fa-angle-double-right"></i> 特典登録</a></li>
-                        <li><a href="#"><i class="fa fa-angle-double-right"></i> 問合せ一覧</a></li>
-                        <li><a href="#"><i class="fa fa-angle-double-right"></i> 問合せ登録</a></li>
-                    </ul>
-                </li>
-                <li class="treeview">
-                    <a href="#">
-                        <i class="fa fa-folder"></i> <span>分析</span>
-                        <i class="fa fa-angle-left pull-right"></i>
-                    </a>
-                    <ul class="treeview-menu">
-                        <li><a href="#"><i class="fa fa-angle-double-right"></i> ---</a></li>
-                    </ul>
-                </li>
-                <li class="treeview">
-                    <a href="#">
-                        <i class="fa fa-folder"></i> <span>管理</span>
-                        <i class="fa fa-angle-left pull-right"></i>
-                    </a>
-                    <ul class="treeview-menu">
-                        <li><a href="#"><i class="fa fa-angle-double-right"></i> ログイン管理</a></li>
-                        <li><a href="#"><i class="fa fa-angle-double-right"></i> パスワード変更</a></li>
-                        <li><a href="#"><i class="fa fa-angle-double-right"></i> 基本情報</a></li>
-                        <li><a href="#"><i class="fa fa-angle-double-right"></i> 自動取得状況</a></li>
-                    </ul>
-                </li>
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container"> <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"><span
+                    class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span> </a><a class="brand" href="{{ URL::to('fair/') }}">Wedding Site Controller</a>
+      <div class="nav-collapse">
+        <ul class="nav pull-right">
+          <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i
+                            class="icon-cog"></i> Account <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="javascript:;">Settings</a></li>
+              <li><a href="javascript:;">Help</a></li>
             </ul>
-        </div>
-    </nav>
-</header>
+          </li>
+          <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i
+                            class="icon-user"></i> EGrappler.com <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="javascript:;">Profile</a></li>
+              <li><a href="javascript:;">Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+        <form class="navbar-search pull-right">
+          <input type="text" class="search-query" placeholder="Search">
+        </form>
+      </div>
+      <!--/.nav-collapse --> 
+    </div>
+    <!-- /container --> 
+  </div>
+  <!-- /navbar-inner --> 
+</div>
+<!-- /navbar -->
+<div class="subnavbar">
+  <div class="subnavbar-inner">
+    <div class="container">
+      <ul class="mainnav">
+        <li class="active"><a href="index.html"><i class="icon-dashboard"></i><span>Dashboard</span> </a> </li>
+        <li><a href="reports.html"><i class="icon-list-alt"></i><span>Reports</span> </a> </li>
+        <li><a href="guidely.html"><i class="icon-facetime-video"></i><span>App Tour</span> </a></li>
+        <li><a href="charts.html"><i class="icon-bar-chart"></i><span>Charts</span> </a> </li>
+        <li><a href="shortcodes.html"><i class="icon-code"></i><span>Shortcodes</span> </a> </li>
+        <li class="dropdown"><a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown"> <i class="icon-long-arrow-down"></i><span>Drops</span> <b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a href="icons.html">Icons</a></li>
+            <li><a href="faq.html">FAQ</a></li>
+            <li><a href="pricing.html">Pricing Plans</a></li>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="signup.html">Signup</a></li>
+            <li><a href="error.html">404</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <!-- /container --> 
+  </div>
+  <!-- /subnavbar-inner --> 
+</div>
+<!-- /subnavbar -->

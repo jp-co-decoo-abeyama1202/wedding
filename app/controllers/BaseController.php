@@ -123,9 +123,15 @@ class BaseController extends Controller {
         $site->deleteFair(87);
     }
     
-    public function getTest()
+    public function getTokuten()
     {
         $site = new SiteRakuten();
-        $site->test();
+        $site->getTokuten();
+    }
+    
+    public function getUtokuten()
+    {
+        $site = new SiteRakuten();
+        $site->updateTokuten();
     }
 }

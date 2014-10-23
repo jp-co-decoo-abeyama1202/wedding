@@ -17,7 +17,7 @@ class WorkMynaviValidation {
      * @param type $data
      * @return type
      */
-    public static function getAllValidation($keys=array())
+    public static function getAllValidation($keys=array(),$rejects=array())
     {
         $hour  = array();
         $min5  = array();
@@ -86,6 +86,11 @@ class WorkMynaviValidation {
             }
             $v["fairDetailFormList[$i].headline"] = array('mb_max:100');
             $v["fairDetailFormList[$i].complement"] = array('mb_max:500');
+        }
+        foreach($rejects as $r) {
+            if(isset($v[$r])) {
+                unset($v[$r]);
+            }
         }
         if(!$keys) {
             return $v;

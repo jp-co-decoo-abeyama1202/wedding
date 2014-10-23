@@ -34,16 +34,37 @@ class SiteRakuten extends Site {
     const FAIR_LIST_URL = 'https://wedding.rakuten.co.jp/admin/upFair/search';
     const FAIR_LIST_PATTERN = '/^https:\/\/wedding.rakuten.co.jp\/admin\/upFair\/search\?ticket=(\d+)(\&\S+)/';
     const FAIR_LIST_OUTPUT_LINK_PATTERN = '/\/admin\/upFair\/editInput\/ticket\/\d+\/fair_no\/(\d+)/';
+    
     //フェア編集
     const FAIR_EDIT_URL = "https://wedding.rakuten.co.jp/admin/upFair/editInput/ticket/%%TICKET%%/fair_no/%%ID%%";
     const FAIR_EDIT_PATTERN = "/^https:\/\/wedding.rakuten.co.jp\/admin\/upFair\/editInput\/ticket\/(\d+)\/fair_no\/(\d+)/";
+    const FAIR_EDIT_CONFIRM_URL = 'https://wedding.rakuten.co.jp/admin/upFair/editConfirm';
+    const FAIR_EDIT_CONFIRM_PATTERN = '/^https:\/\/wedding.rakuten.co.jp\/admin\/upFair\/editConfirm/';
+    const FAIR_EDIT_REGIST_URL = 'https://wedding.rakuten.co.jp/admin/upFair/editRegist';
+    const FAIR_EDIT_REGIST_PATTERN = '/^https:\/\/wedding.rakuten.co.jp\/admin\/upFair\/editRegist/';
+    
     //フェア登録
     const FAIR_INPUT_URL = "https://wedding.rakuten.co.jp/admin/upFair/newInput/ticket/%%TICKET%%/";
     const FAIR_INPUT_PATTERN = "/^https:\/\/wedding.rakuten.co.jp\/admin\/upFair\/newInput\/ticket\/(\d+)\//";
-    const FAIR_CONFIRM_URL = 'https://wedding.rakuten.co.jp/admin/upFair/newConfirm';
-    const FAIR_CONFIRM_PATTERN = '/^https:\/\/wedding.rakuten.co.jp\/admin\/upFair\/newConfirm/';
-    const FAIR_REGIST_URL = 'https://wedding.rakuten.co.jp/admin/upFair/newRegist';
-    const FAIR_REGIST_PATTERN = '/^https:\/\/wedding.rakuten.co.jp\/admin\/upFair\/newRegist/';
+    const FAIR_INPUT_CONFIRM_URL = 'https://wedding.rakuten.co.jp/admin/upFair/newConfirm';
+    const FAIR_INPUT_CONFIRM_PATTERN = '/^https:\/\/wedding.rakuten.co.jp\/admin\/upFair\/newConfirm/';
+    const FAIR_INPUT_REGIST_URL = 'https://wedding.rakuten.co.jp/admin/upFair/newRegist';
+    const FAIR_INPUT_REGIST_PATTERN = '/^https:\/\/wedding.rakuten.co.jp\/admin\/upFair\/newRegist/';
+    
+    //フェア削除
+    const FAIR_DELETE_URL = "https://wedding.rakuten.co.jp/admin/upFair/deleteConfirm?ticket=%%TICKET%%&fair_no[]=%%ID%%";
+    const FAIR_MULTI_DELETE_URL = "https://wedding.rakuten.co.jp/admin/upFair/deleteConfirm?ticket=%%TICKET";
+    const FAIR_DELETE_PATTERN = "/^https:\/\/wedding.rakuten.co.jp\/admin\/upFair\/deleteConfirm\?ticket=(\d+)(\&fair_no\[\]=\d+)+/";
+    const FAIR_DELETE_REGIST_URL = "https://wedding.rakuten.co.jp/admin/upFair/deleteRegist";
+    const FAIR_DELETE_REGIST_PATTERN = "/^https:\/\/wedding.rakuten.co.jp\/admin\/upFair\/deleteRegist/";
+    
+    //特典取得
+    const TOKUTEN_INPUT_URL = "https://wedding.rakuten.co.jp/admin/upTokuten/input/ticket/%%TICKET%%";
+    const TOKUTEN_INPUT_PATTERN = "/^https:\/\/wedding.rakuten.co.jp\/admin\/upTokuten\/input\/ticket\/(\d+)/";
+    const TOKUTEN_CONFIRM_URL ="https://wedding.rakuten.co.jp/admin/upTokuten/doCheck";
+    const TOKUTEN_CONFIRM_PATTERN = "/^https:\/\/wedding.rakuten.co.jp\/admin\/upTokuten\/doCheck/";
+    const TOKUTEN_REGIST_URL = "https://wedding.rakuten.co.jp/admin/upTokuten/doUpdate";
+    const TOKUTEN_REGIST_PATTERN = "/^https:\/\/wedding.rakuten.co.jp\/admin\/upTokuten\/doUpdate/";
     
     const RELOAD_URL = "https://wedding.rakuten.co.jp/admin/upSessionTimeReload/sessionRelaod?ticket=%%TICKET%%";
     const COOKIE_PATH = '/home/homepage/html/wedding/app/cookies/rakuten.txt';
@@ -52,6 +73,22 @@ class SiteRakuten extends Site {
         'login_id' => '',
         'pass' => '',
     );
+    
+    protected static $_inputParams = array(
+        'd_fair_no' => '',
+        'page_no' => '',
+        'open_date_from_year' => '',
+        'open_date_from_month' => '',
+        'open_date_from_day' => '',
+        'open_date_to_year' => '',
+        'open_date_to_month' => '',
+        'open_date_to_day' => '',
+        'fair_name' => '',
+        'point_flg' => 0,
+        'view_flg[]' => array(0,1),
+        'fairNo' => '#search_result',
+    );
+    
     /**
      * セッション毎に割り当てられる文字列。ログイン成功時に引っ張ってくる。
      * @var str 
@@ -115,6 +152,7 @@ class SiteRakuten extends Site {
             error_log($e);
             return false;
         }
+        $this->optionReset();
         $this->_update = true;
         return true;
     }
@@ -132,11 +170,7 @@ class SiteRakuten extends Site {
                 //var_dump($params);
                 $this->_curl->addUrl(str_replace('%%TICKET%%',$this->_ticket,self::LOGOUT_URL2));
                 $this->run();
-                $info = $this->_curl->getInfo();
-                //echo $this->_curl->getExec();
-                if($info['http_code']!==200) {
-                    throw new WorkException(WorkException::CODE_RAKUTEN_LOGOUT_FAILED,$this->_curl);
-                }
+                $this->curlCheck(WorkException::CODE_RAKUTEN_LOGOUT_FAILED);
             }
             $this->_update = false;
         } catch(Exception $e) {
@@ -183,9 +217,9 @@ class SiteRakuten extends Site {
             $this->_curl->addUrl($url);
             $this->run();
             $info = $this->_curl->getInfo();
-            if($info['http_code']!==200 || !preg_match(self::FAIR_LIST_PATTERN,$info['url'])) {
-                throw new WorkException(WorkException::CODE_CONNECT_FAILED,$this->_curl);
-            }
+            //チェック
+            $this->curlCheck(WorkException::CODE_CONNECT_FAILED,self::FAIR_LIST_PATTERN);
+            
             preg_match_all(self::FAIR_LIST_OUTPUT_LINK_PATTERN,$this->_curl->getExec(),$matches,PREG_SET_ORDER);
             $ids = array();
             foreach($matches as $m) {
@@ -204,6 +238,7 @@ class SiteRakuten extends Site {
     
     public function getFairDetail($id, $chClose = true) 
     {
+        $id = 106;
         //更新ページログイン処理
         if(!$this->doubleLogin()) {
             return false;
@@ -222,9 +257,10 @@ class SiteRakuten extends Site {
             $this->_curl->addUrl($url);
             $this->run();
             $info = $this->_curl->getInfo();
-            if($info['http_code']!==200||!preg_match(self::FAIR_EDIT_PATTERN,$info['url'])) {
-                throw new WorkException(WorkException::CODE_CONNECT_FAILED,$this->_curl);
-            }
+            
+            //チェック
+            $this->curlCheck(WorkException::CODE_FAIR_GET_FAILED,self::FAIR_EDIT_PATTERN);
+            
             //input,select,textareaを取得
             $ret = $this->getDetailVal($this->_curl->getExec(), array());
             //保存
@@ -251,6 +287,8 @@ class SiteRakuten extends Site {
     
     public function addFair($id,$chClose=true)
     {
+        $errorStrPattern = "/エラー/";
+        
         //更新ページログイン処理
         if(!$this->doubleLogin()) {
             return false;
@@ -259,37 +297,28 @@ class SiteRakuten extends Site {
             $id = 97;
             //必要データ取得処理
             $work = WorkRakutenFair::findOrFail($id);
-            $data = unserialize($work->data);
-            $key_str = "";
-            $params = array(
-                'fairEventListUrl' => '/admin/upFair/fairEventList',
-                'fairEventListUrlAll' => '/admin/upFair/fairEventListAll',
-                'fairEventViewFlg' => 0,
-                'ticket' => $this->_ticket,
-                'key_str' => '',
-                'photo_category' => 98,
-                'frm[only_online_reserve]' => '',
-                'frm[registered_open_date]' => '',
-                'frm[hall_id]' => $this->_hollId,
-                'frm[open_date]' => '',
-                'frm[reserve_cd]' => 1,
-            );
+            $data = $this->formatInputData(unserialize($work->data));
+            
+            $params = self::$_inputParams;
+            $params['ticket'] = $this->_ticket;
+            
             //データチェック
-            $validator = $this->getFairInputValidation($data);
+            $validator = WorkRakutenValidation::getFairInputValidation($data);
             if ($validator->fails()) {
                 $messages = json_decode($validator->messages());
                 foreach($messages as $key => $value) {
                     echo $key ." ： ".implode(",",$value). " ===> " .$data[$key] . "<br/>";
                 }
-                return false;
+                throw new WorkException(WorkException::CODE_FAIR_ADD_FAILED,$this->_curl);
             }
+            
             //登録画面から必要値を抽出
             $this->_curl->addUrl(str_replace('%%TICKET%%',$this->_ticket,self::FAIR_INPUT_URL));
             $this->run();
-            $info = $this->_curl->getInfo();
-            if($info['http_code'] !== 200 || !preg_match(self::FAIR_INPUT_PATTERN,$info['url'])) {
-                throw new WorkException(WorkException::CODE_FAIR_ADD_FAILED,$this->_curl);
-            }
+            
+            $this->curlCheck(WorkException::CODE_FAIR_ADD_FAILED,self::FAIR_INPUT_PATTERN,$errorStrPattern);
+
+            //echo $this->_curl->getExec();
             $html = str_get_html($this->_curl->getExec());
             foreach($html->find("input") as $input) {
                 if(in_array($input->name,array('key_str','frm[only_online_reserve]','frm[registered_open_date]'))) {
@@ -305,6 +334,7 @@ class SiteRakuten extends Site {
                     $params[$key] = $data[$key];
                 }
             }
+            //イベントリスト
             foreach($data as $key => $param) {
                 if(preg_match('/^frm\[event_list\]\[(\d+)\]\[([a-zA-Z0-9_]+)\]\[\]/',$key,$m)) {
                     $num = ((int)$m[1]) + 100000;
@@ -315,13 +345,11 @@ class SiteRakuten extends Site {
                     $key = 'frm[event_list]['.$num.']['.$m[2].']';
                     $params[$key] = $param;
                 }
-                
             }
             //日付データ取得
             $params['frm[reserve_method_cd][]'] = $data['frm[reserve_method_cd][]'];
             $params['frm[open_date]'] = $data['frm[open_date]'];
-            //test
-            $params['frm[fair_name]'] = $params['frm[fair_name]'] . "_";
+            
             //---- 確認ページへPOST ----//
             //boundary作成
             $boundary = '----WebKitFormBoundary' . Str::random(16);
@@ -334,26 +362,101 @@ class SiteRakuten extends Site {
             
             //データの貼り付け
             $this->optionReset();
-            $this->_curl->addUrl(self::FAIR_CONFIRM_URL);
+            $this->_curl->addUrl(self::FAIR_INPUT_CONFIRM_URL);
             $this->_curl->addPostParams($body);
             $this->_curl->addOption(CURLOPT_HTTPHEADER, $header);
             $this->run();
             
-            $info = $this->_curl->getInfo();
-            //var_dump($info);
-            //echo $this->_curl->getExec();
-            if($info['http_code'] !== 200 || !preg_match(self::FAIR_CONFIRM_PATTERN,$info['url'])) {
-                throw new WorkException(WorkException::CODE_FAIR_ADD_FAILED,$this->_curl);
-            }
+            $this->curlCheck(WorkException::CODE_FAIR_ADD_FAILED,self::FAIR_INPUT_CONFIRM_PATTERN,$errorStrPattern);
 
             //---- 登録 ----//
             //必要データ抽出
-            $params = array();
+            $registParams = array();
             preg_match_all('/<input\stype="hidden"\sname="([^"]+)"\sid="[^"]+"\svalue="([\S|\n|\r]+)" \/>/',$this->_curl->getExec(),$matches,PREG_SET_ORDER);
             foreach($matches as $m) {
-                $params[$m[1]] = $m[2];
+                $registParams[$m[1]] = $m[2];
             }
 
+            //boundary作成
+            $boundary = '----WebKitFormBoundary' . Str::random(16);
+            $body = $this->multipart_build_query($registParams, $boundary);
+            //headerを作る
+            $header = array(
+                "Content-Type:multipart/form-data; boundary=$boundary",
+                "Expect:",
+            );
+
+            $this->optionReset();
+            $this->_curl->addUrl(self::FAIR_INPUT_REGIST_URL);
+            $this->_curl->addPostParams($body);
+            $this->_curl->addOption(CURLOPT_HTTPHEADER, $header);
+            $this->run();
+            
+            $this->curlCheck(WorkException::CODE_FAIR_ADD_FAILED,self::FAIR_INPUT_REGIST_PATTERN,$errorStrPattern);
+            
+        } catch(Exception $e) {
+            error_log($e);
+            if($chClose) {
+                $this->close();
+            }
+            return false;
+        }
+        if($chClose) {
+            $this->close();
+        }
+        return true;
+    }
+    
+    public function updateFair($id,$chClose=true)
+    {
+        $errorStrPattern = "/エラー/";
+        
+        //更新ページログイン処理
+        if(!$this->doubleLogin()) {
+            return false;
+        }
+        try {
+            $id = 106;
+            //更新データ
+            $updateData = array(
+                'frm[fair_name]' => 'テストフェア情報_+',
+            );
+            //データ取得
+            $url = str_replace('%%TICKET%%',$this->_ticket,str_replace('%%ID%%',$id,self::FAIR_EDIT_URL));
+            echo $url."<br/>";
+            
+            $this->_curl->addUrl($url);
+            $this->run();
+            //チェック
+            $this->curlCheck(WorkException::CODE_FAIR_UPDATE_FAILED,self::FAIR_EDIT_PATTERN);
+            //input,select,textareaを取得
+            $data = $this->getDetailVal($this->_curl->getExec(), array());
+            
+            //DBのデータをValidate
+            $validator = WorkMynaviValidation::getFairUpdateValidation($updateData);
+            if ($validator->fails()) {
+               $failed = false;
+                $messages = json_decode($validator->messages());
+                foreach($messages as $key => $value) {
+                    if(isset($updateData[$key])) {
+                        echo $key ." ： ".implode(",",$value). " ===> " . $updateData[$key] . "<br/>";
+                        $failed = true;
+                    }
+                }
+                if($failed) {
+                    throw new WorkException(WorkException::CODE_UPDATE_FAILED,$this->_curl);
+                }
+            }
+            //DBのデータで上書き
+            $params = array();
+            foreach($data as $key => $value) {
+                if(!$key||preg_match('/^frm\[event_list\]\[\$\{index\}\]/',$key)) {
+                    continue;
+                }
+                $params[$key] = isset($updateData[$key]) ? $updateData[$key] : $value;
+            }
+            
+            //---- 確認ページへPOST ----//
             //boundary作成
             $boundary = '----WebKitFormBoundary' . Str::random(16);
             $body = $this->multipart_build_query($params, $boundary);
@@ -362,20 +465,83 @@ class SiteRakuten extends Site {
                 "Content-Type:multipart/form-data; boundary=$boundary",
                 "Expect:",
             );
+            
+            //データの貼り付け
+            $this->optionReset();
+            $this->_curl->addUrl(self::FAIR_EDIT_CONFIRM_URL);
+            $this->_curl->addPostParams($body);
+            $this->_curl->addOption(CURLOPT_HTTPHEADER, $header);
+            $this->run();
+            $this->curlCheck(WorkException::CODE_FAIR_UPDATE_FAILED,self::FAIR_EDIT_CONFIRM_PATTERN,$errorStrPattern);
+
+            //---- 更新 ----//
+            //必要データ抽出
+            $registParams = array();
+            preg_match_all('/<input\stype="hidden"\sname="([^"]+)"\sid="[^"]+"\svalue="([\S|\n|\r]+)" \/>/',$this->_curl->getExec(),$matches,PREG_SET_ORDER);
+            foreach($matches as $m) {
+                $registParams[$m[1]] = $m[2];
+            }
+
+            //boundary作成
+            $boundary = '----WebKitFormBoundary' . Str::random(16);
+            $body = $this->multipart_build_query($registParams, $boundary);
+            //headerを作る
+            $header = array(
+                "Content-Type:multipart/form-data; boundary=$boundary",
+                "Expect:",
+            );
 
             $this->optionReset();
-            $this->_curl->addUrl(self::FAIR_REGIST_URL);
+            $this->_curl->addUrl(self::FAIR_EDIT_REGIST_URL);
             $this->_curl->addPostParams($body);
             $this->_curl->addOption(CURLOPT_HTTPHEADER, $header);
             $this->run();
             
-            echo $body."\n<br/>";
-            $info = $this->_curl->getInfo();
-            var_dump($info);
+            $this->curlCheck(WorkException::CODE_FAIR_UPDATE_FAILED,self::FAIR_EDIT_REGIST_PATTERN,$errorStrPattern);
+            
             echo $this->_curl->getExec();
-            if($info['http_code'] !== 200 || !preg_match(self::FAIR_REGIST_PATTERN,$info['url'])) {
-                throw new WorkException(WorkException::CODE_FAIR_ADD_FAILED,$this->_curl);
+            
+        } catch(Exception $e) {
+            error_log($e);
+            if($chClose) {
+                $this->close();
             }
+            return false;
+        }
+        if($chClose) {
+            $this->close();
+        }
+        return true;
+    }
+    
+    public function deleteFair($id,$chClose=true)
+    {
+        $errorStrPattern = "/エラー/";
+        
+        //更新ページログイン処理
+        if(!$this->doubleLogin()) {
+            return false;
+        }
+        try {
+            $id = 101;
+            //データ取得
+            $url = str_replace('%%TICKET%%',$this->_ticket,str_replace('%%ID%%',$id,self::FAIR_DELETE_URL));
+            $this->_curl->addUrl($url);
+            $this->run();
+            //チェック
+            $this->curlCheck(WorkException::CODE_FAIR_DELETE_FAILED,self::FAIR_DELETE_PATTERN);
+            //input,select,textareaを取得
+            $params = $this->getDetailVal($this->_curl->getExec(), array());
+            
+            //確定ページへ
+            $this->optionReset();
+            $this->_curl->addUrl($this->createGetUrl(self::FAIR_DELETE_REGIST_URL,$params));
+            $this->_curl->methodPost();
+            $this->run();
+            
+            $this->curlCheck(WorkException::CODE_FAIR_DELETE_FAILED,self::FAIR_DELETE_REGIST_PATTERN,$errorStrPattern);
+            
+            echo $this->_curl->getExec();
             
         } catch(Exception $e) {
             error_log($e);
@@ -391,33 +557,197 @@ class SiteRakuten extends Site {
     }
     
     /**
-     * フェア登録をする際のValidate内容
-     * @param type $data
-     * @return type
+     * 特典情報取得
+     * @param type $chClose
+     * @return boolean
      */
-    public function getFairInputValidation($data)
+    public function getTokuten($chClose=true)
     {
-        $hour = array();
-        $min  = array();
-        for($i=0;$i<60;$i+=5){
-            $min[] = sprintf('%02d',$i);
-        }
-        $hour = '8,9,10,11,12,13,14,15,16,17,18,19,20';
-        $min = implode(",",$min);
+        $errorStrPattern = "/[エラー|更新するデータがありません]/";
         
-        $v = array(
-            'frm[fair_name]' => array('required','max:40'),
-            'frm[introduction]' => array('required','max:200'),
-            'frm[reception_cd]' => array('numeric','in:1,2,3,4,5'),
-            'frm[photo_id]' => array('required','numeric'),
-            'frm[same_event_time_flg]' => array('numeric','in:0'),
-        );
-        if(isset($data['frm[same_event_time_flg]'])) {
-            $v['frm[same_event_time][event_time_from_hour]'] = array('numeric','in:'.$hour,'required_with:foo:frm[same_event_time_flg]');
-            $v['frm[same_event_time][event_time_from_minute]'] = array('numeric','in:'.$min,'required_with:foo:frm[same_event_time_flg]');
-            $v['frm[same_event_time][event_time_to_hour]'] = array('numeric','in:'.$hour,'required_with:foo:frm[same_event_time_flg]');
-            $v['frm[same_event_time][event_time_to_minute]'] = array('numeric','in:'.$min,'required_with:foo:frm[same_event_time_flg]');
+        //更新ページログイン処理
+        if(!$this->doubleLogin()) {
+            return false;
         }
-        return Validator::make($data,$v);
+        try {
+            $this->_curl->addUrl(str_replace('%%TICKET%%',$this->_ticket,self::TOKUTEN_INPUT_URL));
+            $this->run();
+            //チェック
+            $this->curlCheck(WorkException::CODE_RAKUTEN_TOKUTEN_GET_FAILED,self::TOKUTEN_INPUT_PATTERN,$errorStrPattern);
+            //データ内容取得
+            $data = $this->getDetailVal($this->_curl->getExec());
+            $tokutens = array(
+                WorkRakutenTokuten::TYPE_TOKUTEN_1 => array(
+                    0 => new WorkRakutenTokuten(),
+                    1 => new WorkRakutenTokuten(),
+                    2 => new WorkRakutenTokuten(),
+                    3 => new WorkRakutenTokuten(),
+                    4 => new WorkRakutenTokuten(),
+                ),
+                WorkRakutenTokuten::TYPE_TOKUTEN_2 => array(
+                    0 => new WorkRakutenTokuten(),
+                    1 => new WorkRakutenTokuten(),
+                    2 => new WorkRakutenTokuten(),
+                    3 => new WorkRakutenTokuten(),
+                    4 => new WorkRakutenTokuten(),
+                ),
+            );
+            //登録済みデータを持ってくる
+            foreach(WorkRakutenTokuten::all() as $tokuten) {
+                $tokutens[$tokuten->type][$tokuten->type_no] = $tokuten;
+            }
+            DB::beginTransaction();
+            foreach(array(WorkRakutenTokuten::TYPE_TOKUTEN_1,WorkRakutenTokuten::TYPE_TOKUTEN_2) as $i) {
+                
+                //position
+                foreach($data["position[$i][]"] as $key => $position) {
+                    if($position) {
+                        $tokutens[$i][$key]->position = $position;
+                    }
+                }
+                //privilege_name
+                foreach($data["privilege_name[$i][]"] as $key => $privilegeName) {
+                    if($privilegeName) {
+                        $tokutens[$i][$key]->privilege_name = $privilegeName;
+                    }
+                }
+                //privilege_content
+                foreach($data["privilege_content[$i][]"] as $key => $privilegeContent) {
+                    if($privilegeContent) {
+                        $tokutens[$i][$key]->privilege_content = $privilegeContent;
+                    }
+                }
+                //privilege_object
+                foreach($data["privilege_object[$i][]"] as $key => $privilegeObject) {
+                    if($privilegeObject) {
+                        $tokutens[$i][$key]->privilege_object = $privilegeObject;
+                    }
+                }
+                //application_method
+                foreach($data["application_method[$i][]"] as $key => $applicationMethod) {
+                    if($applicationMethod) {
+                        $tokutens[$i][$key]->application_method = $applicationMethod;
+                    }
+                }
+                for($j=0;$j<5;$j++) {
+                    //fd_span_from
+                    if(is_array($data["fd_span_from[$i][$j][]"])) {
+                        $tokutens[$i][$j]->fd_span_from = implode("-",$data["fd_span_from[$i][$j][]"]);
+                    }
+                    //fd_span_to
+                    if(is_array($data["fd_span_from[$i][$j][]"])) {
+                        $tokutens[$i][$j]->fd_span_to = implode("-",$data["fd_span_to[$i][$j][]"]);
+                    }
+                    if(isset($data["access_view[$i][$j]"])) {
+                        $tokutens[$i][$j]->access_view = $data["access_view[$i][$j]"];
+                    }
+                }
+                
+                //privilege_no
+                foreach($data["privilege_no[$i][]"] as $key => $privilageNo) {
+                    if($privilageNo) {
+                        $tokutens[$i][$key]->privilege_no = $privilageNo;
+                        $tokutens[$i][$key]->type_no = $key;
+                        $tokutens[$i][$key]->type = $i;
+                        $tokutens[$i][$key]->save();
+                    }
+                }
+            }
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            error_log($e);
+            if($chClose) {
+                $this->close();
+            }
+            return false;
+        }
+        if($chClose) {
+            $this->close();
+        }
+        return true;
+    }
+    
+    /**
+     * 特典情報更新
+     * @param type $chClose
+     * @return boolean
+     */
+    public function updateTokuten($chClose=true) 
+    {
+        $errorStrPattern = "/エラー/";
+        
+        //更新ページログイン処理
+        if(!$this->doubleLogin()) {
+            return false;
+        }
+        try {
+            $this->_curl->addUrl(str_replace('%%TICKET%%',$this->_ticket,self::TOKUTEN_INPUT_URL));
+            $this->run();
+            //チェック
+            $this->curlCheck(WorkException::CODE_RAKUTEN_TOKUTEN_UPDATE_FAILED,self::TOKUTEN_INPUT_PATTERN,$errorStrPattern);
+            //データ内容取得
+            $data = $this->getDetailVal($this->_curl->getExec());
+            //DBのデータで上書き
+            foreach(WorkRakutenTokuten::all() as $tokuten) {
+                //position
+                $data["position[$tokuten->type][]"][$tokuten->type_no] = $tokuten->position;
+                //privilege_name
+                $data["privilege_name[$tokuten->type][]"][$tokuten->type_no] = $tokuten->privilege_name . "_t";
+                //privilege_content
+                $data["privilege_content[$tokuten->type][]"][$tokuten->type_no] = $tokuten->privilege_content;
+                //privilege_object
+                $data["privilege_object[$tokuten->type][]"][$tokuten->type_no] = $tokuten->privilege_object;
+                //application_method
+                $data["application_method[$tokuten->type][]"][$tokuten->type_no] = $tokuten->application_method;
+                //fd_span_from
+                $data["fd_span_from[$tokuten->type][$tokuten->type_no][]"] = explode("-",$tokuten->fd_span_from);
+                //fd_span_to
+                $data["fd_span_to[$tokuten->type][$tokuten->type_no][]"] = explode("-",$tokuten->fd_span_to);
+                //access_view
+                $data["access_view[$tokuten->type][$tokuten->type_no]"] = $tokuten->access_view;
+            }
+            $data['del_privilege_no'] = "";
+            $data['ticket'] = $this->_ticket;
+            $this->optionReset();
+            $this->_curl->addUrl($this->createGetUrl(self::TOKUTEN_CONFIRM_URL, $data));
+            $this->_curl->methodPost();
+            $this->run();
+            $this->curlCheck(WorkException::CODE_RAKUTEN_TOKUTEN_UPDATE_FAILED,self::TOKUTEN_CONFIRM_PATTERN,$errorStrPattern);
+            
+            if(!preg_match("/更新するデータがありません/",$this->_curl->getExec())) {
+                //データ内容取得
+                $updateParams = $this->getDetailVal($this->_curl->getExec());
+                $this->optionReset();
+                $this->_curl->addUrl(self::TOKUTEN_REGIST_URL);
+                $this->_curl->addPostParams($updateParams);
+                $this->run();
+                echo $this->_curl->getExec();
+                $this->curlCheck(WorkException::CODE_RAKUTEN_TOKUTEN_UPDATE_FAILED,self::TOKUTEN_REGIST_PATTERN,$errorStrPattern);
+            }
+            
+        } catch (Exception $e) {
+            error_log($e);
+            if($chClose) {
+                $this->close();
+            }
+            return false;
+        }
+        if($chClose) {
+            $this->close();
+        }
+        return true;
+    }
+    
+    public function formatInputData($data)
+    {
+        //テストデータ加工
+        if(App::environment("testing")) {
+            if(mb_strlen($data['frm[fair_name]']) < 39) {
+                $data['frm[fair_name]'].= "_t";
+            }
+            $data['frm[open_date]'] = date('Y-m-d',strtotime('+1 day'));
+        }
+        return $data;
     }
 }

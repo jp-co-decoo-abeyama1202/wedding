@@ -1,10 +1,13 @@
 <?php
 /**
- * Description of Fair
- *
+ * フェア情報クラス
  * @author admin-97
  */
-class Fair extends Eloquent {
+class Fair extends Eloquent 
+{
+    
+    protected $softDelete = true;
+    
     public function gnavi()
     {
         return $this->hasOne('FairGnavi');
@@ -39,7 +42,10 @@ class Fair extends Eloquent {
     {
         return $this->hasOne('FairZexy');
     }
-    
+    /**
+     * フェア開催日付
+     * @return type
+     */
     public function dates()
     {
         return $this->hasMeny('FairDate');

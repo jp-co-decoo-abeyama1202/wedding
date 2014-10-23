@@ -17,7 +17,7 @@ class WorkParkValidation {
      * @param type $data
      * @return type
      */
-    public static function getAllValidation($keys=array())
+    public static function getAllValidation($keys=array(),$rejects=array())
     {
         $hour = array();
         $min  = array();
@@ -58,6 +58,11 @@ class WorkParkValidation {
             $v["fair_types[$i][item][start_hour3]"] = array('in:'.$hour);
             $v["fair_types[$i][item][start_min3]"] = array('in:'.$min);
             $v["fair_types[$i][item][note]"] = array('max:200');
+        }
+        foreach($rejects as $r) {
+            if(isset($v[$r])) {
+                unset($v[$r]);
+            }
         }
         if(!$keys) {
             return $v;

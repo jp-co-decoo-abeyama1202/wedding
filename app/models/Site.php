@@ -170,6 +170,26 @@ abstract class Site {
     }
     
     /**
+     * Curlで取得したデータのチェック処理
+     * @param int $ecode WorkExceptionのエラーコード
+     * @param string $urlPattern 合致URLパターン
+     * @param string $notStrPattern 含まれてはいけない文字列パターン
+     * @throws WorkException
+     */
+    protected function curlCheck($ecode=WorkException::CODE_CONNECT_FAILED,$urlPattern="",$notStrPattern="")
+    {
+        if ($this->_curl->getInfo('http_code') !== 200) {
+            throw new WorkException($ecode,$this->_curl);
+        }
+        if ($urlPattern && !preg_match($urlPattern,$this->_curl->getInfo('url'))) {
+            throw new WorkException($ecode,$this->_curl);
+        }
+        if ($notStrPattern && preg_match($notStrPattern,$this->_curl->getExec())) {
+            throw new WorkException($ecode,$this->_curl);
+        }
+    }
+    
+    /**
      * site_loginsに登録を行う。
      * @param type $loginId
      * @param type $password
@@ -213,15 +233,14 @@ abstract class Site {
         foreach($params as $key => $p) {
             if(is_array($p)) {
                 foreach($p as $value) {
-                    $get[] = $key."=".urlencode($value);
+                    $get[] = urlencode($key)."=".urlencode($value);
                 }
             } else {
-                $get[] = $key."=".$p;
+                $get[] = urlencode($key)."=".urlencode($p);
             }
         }
         $url .= strpos('?',$url) === false ? '?' : '&';
-        return $url . http_build_query($params);
-        //return $url . implode('&',$get);
+        return $url . implode('&',$get);
     }
     
     /**
@@ -345,14 +364,43 @@ abstract class Site {
         //select
         foreach($html->find('select') as $select) {
             foreach($select->find('option') as $option) {
+                $key = $value = null;
                 if($option->selected) {
-                    $ret[$head.$select->name] = trim($option->value);
+                    $key = $head.$select->name;
+                    $value = trim($option->value);
+                }
+                if(!is_null($key) && !is_null($value)) {
+                    if(array_key_exists($key,$ret)) {
+                        //同名カラムが存在する場合は配列にして取得
+                        if(!is_array($ret[$key])) {
+                            $wk = $ret[$key];
+                            $ret[$key] = array();
+                            $ret[$key][] = $wk;
+                        }
+                        $ret[$key][] = trim($value);
+                    } else {
+                        $ret[$key] = trim($value);
+                    }
                 }
             }
         }
         //textarea
         foreach($html->find('textarea') as $textarea) {
-            $ret[$head.$textarea->name] = trim($textarea->plaintext);
+            $key = $head.$textarea->name;
+            $value = trim($textarea->plaintext);
+            if(!is_null($key) && !is_null($value)) {
+                if(array_key_exists($key,$ret)) {
+                    //同名カラムが存在する場合は配列にして取得
+                    if(!is_array($ret[$key])) {
+                        $wk = $ret[$key];
+                        $ret[$key] = array();
+                        $ret[$key][] = $wk;
+                    }
+                    $ret[$key][] = trim($value);
+                } else {
+                    $ret[$key] = trim($value);
+                }
+            }
         }
         
         $html->clear();

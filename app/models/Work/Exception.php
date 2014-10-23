@@ -23,6 +23,8 @@ class WorkException extends Exception {
     //楽天系
     const CODE_RAKUTEN_UPDATE_LOCK = 501;
     const CODE_RAKUTEN_LOGOUT_FAILED = 502;
+    const CODE_RAKUTEN_TOKUTEN_GET_FAILED = 510;
+    const CODE_RAKUTEN_TOKUTEN_UPDATE_FAILED = 511;
     //その他
     const CODE_CONNECT_FAILED = 999;
     
@@ -39,6 +41,8 @@ class WorkException extends Exception {
         self::CODE_ZEXY_TOKEN_NOTFOUND => 'Zexy:token取得失敗',
         self::CODE_RAKUTEN_UPDATE_LOCK => '楽天：更新画面ロック中',
         self::CODE_RAKUTEN_LOGOUT_FAILED => '楽天：更新画面ログアウト失敗',
+        self::CODE_RAKUTEN_TOKUTEN_GET_FAILED => '楽天：特典取得失敗',
+        self::CODE_RAKUTEN_TOKUTEN_UPDATE_FAILED => '楽天：特典更新失敗',
         self::CODE_CONNECT_FAILED => '接続失敗',
     );
     
@@ -59,6 +63,7 @@ class WorkException extends Exception {
     // オブジェクトの文字列表現を独自に定義する
     public function __toString() {
         $ret = __CLASS__ . ": [{$this->code}]: {$this->message}\n";
+        $ret.= self::getFile(). "(".self::getLine().")\n";
         if($this->_curl && $this->_curl->getInfo()) {
             $info = $this->_curl->getInfo();
             $ret.= 'CURL_INFO > http_code: ['.$info['http_code'].'] url: [' .$info['url'] ."]\n";

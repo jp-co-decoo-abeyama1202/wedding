@@ -11,5 +11,10 @@
  *
  * @author admin-97
  */
-class FairMwed extends FairSite {
+class FairMwed extends FairSite 
+{
+    public function contents()
+    {
+        return $this->hasMany('FairMwedContent');
+    }
 }

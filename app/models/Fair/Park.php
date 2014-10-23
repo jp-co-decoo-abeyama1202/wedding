@@ -11,6 +11,11 @@
  *
  * @author admin-97
  */
-class FairPark extends FairSite {
+class FairPark extends FairSite 
+{
     //put your code here
+    public function contents()
+    {
+        return $this->hasMany('FairParkContent');
+    }
 }

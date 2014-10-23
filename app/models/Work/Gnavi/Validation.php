@@ -18,7 +18,7 @@ class WorkGnaviValidation {
      * @param type $keys
      * @return array
      */
-    public static function getAllValidation($keys=array()){
+    public static function getAllValidation($keys=array(),$rejects=array()){
         $min = array();
         for($i=0;$i<60;++$i) {
             $min[] = sprintf("%02d",$i);
@@ -74,6 +74,12 @@ class WorkGnaviValidation {
             'customer_count' => array('numeric','digits_between:1,3'),
             'reserve_flg' => array('numeric','in:0,1')
         );
+        foreach($rejects as $r) {
+            if(isset($v[$r])) {
+                unset($v[$r]);
+            }
+        }
+        
         if(!$keys) {
             return $v;
         }

@@ -11,6 +11,11 @@
  *
  * @author admin-97
  */
-class FairMynavi extends FairSite {
+class FairMynavi extends FairSite 
+{
     //put your code here
+    public function contents()
+    {
+        return $this->hasMany('FairMynaviContent');
+    }
 }

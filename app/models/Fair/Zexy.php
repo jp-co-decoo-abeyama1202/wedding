@@ -11,6 +11,11 @@
  *
  * @author admin-97
  */
-class FairZexy extends FairSite {
+class FairZexy extends FairSite 
+{
     //put your code here
+    public function contents()
+    {
+        return $this->hasMany('FairZexyContent');
+    }
 }
