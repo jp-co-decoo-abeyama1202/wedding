@@ -1,0 +1,49 @@
+.changes {
+    text-align: center;	
+}
+
+.changes .change { 
+    width: 60px;
+    display: inline-block;
+    padding: 12px 0;
+    margin: 0 .9% 1em;
+    vertical-align: top;
+    text-decoration: none;
+    background: #f9f6f1;
+    border-radius: 5px;
+}
+
+.changes .change .change-icon {
+    margin-top: .25em;
+    margin-bottom: .25em;
+
+    font-size: 32px;
+    color: #545454;
+}
+
+.changes .change:hover {
+    background: #00ba8b;
+}
+
+.changes .change:hover span{
+    color: #fff;
+}
+
+.changes .change:hover .change-icon {
+    color: #fff;
+}
+
+.changes .change-label {
+    display: block;
+    font-weight: 400;
+    color: #545454;
+}
+
+.widget-header .header-titles {
+    float:left;
+}
+.widget-header .header-buttons {
+    float:right;
+    margin-right:10px;
+}
+

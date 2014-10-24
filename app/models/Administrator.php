@@ -8,6 +8,17 @@ class Administrator extends Eloquent implements UserInterface, RemindableInterfa
     
     use UserTrait, RemindableTrait;
     
+    const ROLL_GUEST = 1;
+    const ROLL_OPERATOR = 2;
+    const ROLL_ADMINISTRATOR = 3;
+    const ROLL_DEVELOPER = 4;
+    
+    public static $_rollList = array(
+        self::ROLL_GUEST => '閲覧のみ',
+        self::ROLL_OPERATOR => 'オペレーター',
+        self::ROLL_ADMINISTRATOR => '管理者',
+    );
+    
     /**
      * The database table used by the model.
      *
@@ -29,7 +40,7 @@ class Administrator extends Eloquent implements UserInterface, RemindableInterfa
      */
     public function getAuthIdentifier()
     {
-            return $this->getKey();
+        return $this->getKey();
     }
 
     /**
@@ -39,7 +50,7 @@ class Administrator extends Eloquent implements UserInterface, RemindableInterfa
      */
     public function getAuthPassword()
     {
-            return $this->password;
+        return $this->password;
     }
 
     /**
@@ -49,6 +60,6 @@ class Administrator extends Eloquent implements UserInterface, RemindableInterfa
      */
     public function getReminderEmail()
     {
-            return $this->email;
+        return $this->email;
     }
 }

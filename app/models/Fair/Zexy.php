@@ -13,6 +13,15 @@
  */
 class FairZexy extends FairSite 
 {
+    protected $table = 'fair_zexys';
+    
+    const YOYAKU_KBN_TEL_ONLY = 1;
+    const YOYAKU_KBN_DOUBLE = 2;
+    public static $yokakuKbnList = array(
+        self::YOYAKU_KBN_DOUBLE => 'ネット&電話で受付',
+        self::YOYAKU_KBN_TEL_ONLY => '電話で予約受付',
+    );
+    
     //put your code here
     public function contents()
     {

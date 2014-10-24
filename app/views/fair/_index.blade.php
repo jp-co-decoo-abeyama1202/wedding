@@ -22,8 +22,8 @@
             <div class="row">
                 <div class="span2">
                     <div class="widget">
-                        <div class="widget-header"> <i class="icon-bookmark"></i>
-                            <h3>ログイン状況</h3>
+                        <div class="widget-header"><i class="icon-bookmark"></i>
+                            <h3>Site</h3>
                         </div><!-- /widget-header -->
                         <div class="widget-content">
                             <div class="shortcuts">
@@ -57,10 +57,6 @@
 {{ HTML::script('assets/js/full-calendar/fullcalendar.min.js')}}
 <script>
 $(document).ready(function() {
-    var date = new Date();
-    var d = date.getDate();
-    var m = date.getMonth();
-    var y = date.getFullYear();
     var calendar = $('#calendar').fullCalendar({
       header: {
         left: 'prev,next today',
@@ -84,6 +80,10 @@ $(document).ready(function() {
         week:     '週',
         day:      '日'
       },
+      // 日付クリックイベント
+      dayClick: function () {
+        alert('日付クリックイベント');
+      },
       // 月名称
       monthNames: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
       // 月略称
@@ -92,69 +92,24 @@ $(document).ready(function() {
       dayNames: ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'],
       // 曜日略称
       dayNamesShort: ['日', '月', '火', '水', '木', '金', '土'],
-      selectable: false,
-      selectHelper: false,
-      select: function(start, end, allDay) {
-        var title = prompt('Event Title:');
-        if (title) {
-          calendar.fullCalendar('renderEvent',
-            {
-              title: title,
-              start: start,
-              end: end,
-              allDay: allDay
-            },
-            false // make the event "stick"
-          );
-        }
-        calendar.fullCalendar('unselect');
+      timeFormat: { // for event elements
+        '': 'H:mm' // default
       },
+      axisFormat: 'H:mm',
+      selectable: false,
+      // 選択時にプレースホルダーを描画
+      selectHelper: true,
       editable: true,
       events: [
+        @foreach($dates as $date)
         {
-          title: 'フェア1',
-          start: new Date(y, m, 1)
+          title: "{{$date->fair->fair_name}}",
+          start: new Date("{{date('Y-m-d',strtotime($date->fair_date))}} {{$date->fair->start_h}}:{{$date->fair->start_m}}"),
+          end: new Date("{{date('Y-m-d',strtotime($date->fair_date))}} {{$date->fair->end_h}}:{{$date->fair->end_m}}"),
+          allDay:false,
+          url: "{{URL::to('fair/detail/'.$date->fair->id)}}"
         },
-        {
-          title: 'フェア2',
-          start: new Date(y, m, d+5),
-          end: new Date(y, m, d+7)
-        },
-        {
-          id: 999,
-          title: 'Repeating Event',
-          start: new Date(y, m, d-3, 16, 0),
-          allDay: false
-        },
-        {
-          id: 999,
-          title: 'Repeating Event',
-          start: new Date(y, m, d+4, 16, 0),
-          allDay: false
-        },
-        {
-          title: 'Meeting',
-          start: new Date(y, m, d, 10, 30),
-          allDay: false
-        },
-        {
-          title: 'Lunch',
-          start: new Date(y, m, d, 12, 0),
-          end: new Date(y, m, d, 14, 0),
-          allDay: false
-        },
-        {
-          title: 'Birthday Party',
-          start: new Date(y, m, d+1, 19, 0),
-          end: new Date(y, m, d+1, 22, 30),
-          allDay: false
-        },
-        {
-          title: 'EGrappler.com',
-          start: new Date(y, m, 28),
-          end: new Date(y, m, 29),
-          url: 'http://EGrappler.com/'
-        }
+        @endforeach
       ]
     });
 });
