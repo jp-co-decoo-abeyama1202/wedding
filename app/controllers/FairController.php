@@ -17,6 +17,7 @@ class FairController extends BaseController {
     public function getNew()
     {
         $fair = new Fair();
+        $fair->formatting();
         return View::make('fair/_edit',compact('fair'));
     }
 }

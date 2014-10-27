@@ -47,6 +47,38 @@ class FairMwed extends FairSite
         self::WEB_RSV_5 => '開催5日前まで',
         self::WEB_RSV_STOP => '予約停止',
     );
+    public static $fairTypeList = array(
+        'type_ques' => '相談会',
+        'type_wedding' => '模擬挙式',
+        'type_banquet' => '模擬披露宴',
+        'type_sampling' => '試食会',
+        'type_coordinate' => '会場コーディネート',
+        'type_item' => '料理・引き出物などの展示',
+        'type_tryon' => '試着会',
+        'type_etc' => 'その他'
+    );
+    const DT_TYPE_QUES = 1;
+    const DT_TYPE_WEDDING = 2;
+    const DT_TYPE_BANQUET = 3;
+    const DT_TYPE_SAMPLING = 4;
+    const DT_TYPE_COORDINATE = 5;
+    const DT_TYPE_ITEM = 6;
+    const DT_TYPE_TRYON = 7;
+    const DT_TYPE_ETC_1 = 8;
+    const DT_TYPE_ETC_2 = 9;
+    public static $dtTypeList = array(
+        0 => '--',
+        self::DT_TYPE_QUES => '相談会',
+        self::DT_TYPE_WEDDING => '模擬挙式',
+        self::DT_TYPE_BANQUET => '模擬披露宴',
+        self::DT_TYPE_SAMPLING => '試食会',
+        self::DT_TYPE_COORDINATE => '会場コーディネート',
+        self::DT_TYPE_ITEM => '料理・引き出物などの展示',
+        self::DT_TYPE_TRYON => '試着会',
+        self::DT_TYPE_ETC_1 => 'その他1',
+        self::DT_TYPE_ETC_2 => 'その他2',
+    );
+    
     
     public function contents()
     {

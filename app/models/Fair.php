@@ -6,51 +6,51 @@
 class Fair extends Eloquent 
 {
     const FLG_ON = 1;
-    const FLG_OFF = 2;
+    const FLG_OFF = 0;
     
     const TOUR_FLAG = 1;
     const PACK_FLAG = 2;
     
     public static $hList = array(
-        0 => 0,
-        1 => 1,
-        2 => 2,
-        3 => 3,
-        4 => 4,
-        5 => 5,
-        6 => 6,
-        7 => 7,
-        8 => 8,
-        9 => 9,
-        10 => 10,
-        11 => 11,
-        12 => 12,
-        13 => 13,
-        14 => 14,
-        15 => 15,
-        16 => 16,
-        17 => 17,
-        18 => 18,
-        19 => 19,
-        20 => 20,
-        21 => 21,
-        22 => 22,
-        23 => 23,
+        0  => '00',
+        1  => '01',
+        2  => '02',
+        3  => '03',
+        4  => '04',
+        5  => '05',
+        6  => '06',
+        7  => '07',
+        8  => '08',
+        9  => '09',
+        10 => '10',
+        11 => '11',
+        12 => '12',
+        13 => '13',
+        14 => '14',
+        15 => '15',
+        16 => '16',
+        17 => '17',
+        18 => '18',
+        19 => '19',
+        20 => '20',
+        21 => '21',
+        22 => '22',
+        23 => '23',
     );
     
     public static $mList = array(
-        0 => 0,
-        5 => 5,
-        10 => 10,
-        15 => 15,
-        20 => 20,
-        25 => 25,
-        30 => 30,
-        35 => 35,
-        40 => 40,
-        45 => 45,
-        50 => 50,
-        55 => 55,
+        0  => '00',
+        5  => '05',
+        10 => '10',
+        15 => '15',
+        20 => '20',
+        25 => '25',
+        30 => '30',
+        35 => '35',
+        40 => '40',
+        45 => '45',
+        50 => '50',
+        55 => '55',
     );
     
     const STATE_DRAFT = 0;
@@ -81,15 +81,52 @@ class Fair extends Eloquent
     );
     
     public static $reserveDayList = array(
-        0 => '当日まで',
-        1 => '前日まで',
-        2 => '2日前まで',
-        3 => '3日前まで',
-        4 => '4日前まで',
-        5 => '5日前まで',
+        0 => '当日',
+        1 => '前日',
+        2 => '2日前',
+        3 => '3日前',
+        4 => '4日前',
+        5 => '5日前',
     );
+    public static $reserveTimeList = array(
+        10 => '10:00',
+        12 => '12:00',
+        14 => '14:00',
+        16 => '16:00',
+        18 => '18:00',
+        20 => '20:00',
+        22 => '22:00',
+    );
+    const HOLL_PLACE = 1;
+    const HOLL_OTHER = 2;
+    public static $hollList = array(
+        self::HOLL_PLACE => '会場',
+        self::HOLL_OTHER => 'その他',
+    );
+    
+    const TEL_SYUBETSU_NORMAL = 1;
+    const TEL_SYUBETSU_NOPRICE = 2;
+    const TEL_SYUBETSU_FAX = 3;
+    const TEL_SYUBETSU_NONE = 0;
+    public static $telSyubetsuList = array(
+        self::TEL_SYUBETSU_NORMAL => 'TEL',
+        self::TEL_SYUBETSU_NOPRICE => '無料TEL',
+        self::TEL_SYUBETSU_FAX => 'FAX',
+        self::TEL_SYUBETSU_NONE => '指定しない',
+    );      
             
     protected $softDelete = true;
+    
+    public function formatting()
+    {
+        $this->gnavi = new FairGnavi();
+        $this->mwed = new FairMwed();
+        $this->mynavi = new FairMynavi();
+        $this->park = new FairPark();
+        $this->rakuten = new FairRakuten();
+        $this->sugukon = new FairSugukon();
+        $this->zexy = new FairZexy();
+    }
     
     public function gnavi()
     {
@@ -132,6 +169,11 @@ class Fair extends Eloquent
     public function dates()
     {
         return $this->hasMeny('FairDate');
+    }
+    
+    public function contents()
+    {
+        return $this->hasMany('FairContent');
     }
     
     

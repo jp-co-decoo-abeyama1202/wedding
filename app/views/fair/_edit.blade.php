@@ -6,7 +6,7 @@
     text-align: center;	
 }
 
-.changes .change { 
+.changes .page_change { 
     width: 60px;
     display: inline-block;
     padding: 12px 0;
@@ -17,7 +17,7 @@
     border-radius: 5px;
 }
 
-.changes .change .change-icon {
+.changes .page_change .change-icon {
     margin-top: .25em;
     margin-bottom: .25em;
 
@@ -25,16 +25,30 @@
     color: #545454;
 }
 
-.changes .change:hover {
+.changes .page_change.selected {
     background: #00ba8b;
 }
-
-.changes .change:hover span{
+.changes .page_change.selected span,
+.changes .page_change.selected .change-icon
+{
     color: #fff;
 }
+.changes .page_change.disabled {
+    background: #ddd;
+}
+.changes .page_change.disabled span,
+.changes .page_change.disabled .change-icon
+{
+    color: #eeeeee;
+}
 
-.changes .change:hover .change-icon {
-    color: #fff;
+.changes .page_change:hover {
+    cursor:pointer;
+}
+.changes .page_change.selected:hover,
+.changes .page_change.disabled:hover
+{
+    cursor:auto!important;
 }
 
 .changes .change-label {
@@ -56,14 +70,68 @@
 .form-horizontal {
     margin:20px;
 }
-.form-horizontal .controls {
-    margin-left: 100px;
+.form-horizontal .controls
+{
+    margin-left: 100px!important;
+    margin-bottom: 3px;
 }
 .form-horizontal .control-label {
     width: 85px;
 }
-.hhmm {
+.hhmm, 
+.w50
+{
     width:50px;
+}
+.w30 {
+    width:30px;
+}
+.w80 {
+    width:80px;
+}
+.w300 {
+    width:300px;
+}
+.w450 {
+    width:450px;
+}
+//control-groupのさらに子要素
+.form-horizontal .control-group-group {
+    margin-bottom:18px;
+}
+.form-horizontal .control-group-group .controls {
+    margin-bottom:5px;
+}
+.form-horizontal .controls .control-label {
+    width:65px!important;
+    margin-right:15px;
+}
+span.text-inline {
+    padding-top:5px;
+    display:inline-block;
+    vertical-align:middle;
+}
+.controls .controls-inline {
+    margin-top:5px;
+    margin-bottom:5px;
+}
+.controls .controls-inline .controls {
+    margin-left: 80px!important;
+    padding-bottom:5px;
+}
+/* box-color */
+.has-warning {
+  border-color: #f39c12 !important;
+  border-width: 2px;
+  box-shadow: none;
+}
+.has-error {
+  border-color: #f56954 !important;
+  border-width: 2px;
+  box-shadow: none;
+}
+.badge {
+  cursor:auto!important;
 }
 </style>
 @stop
@@ -79,14 +147,14 @@
                         </div><!-- /widget-header -->
                         <div class="widget-content">
                             <div class="changes">
-                                <a class="change"><i class="change-icon icon-list-alt"></i><span class="change-label">総合</span> </a>
-                                <a class="change"><i class="change-icon icon-list-alt"></i><span class="change-label">ぐるナビ</span> </a>
-                                <a class="change"><i class="change-icon icon-bookmark"></i><span class="change-label">みんなの</span> </a>
-                                <a class="change"><i class="change-icon icon-signal"></i> <span class="change-label">マイナビ</span> </a>
-                                <a class="change"><i class="change-icon icon-comment"></i><span class="change-label">パーク</span> </a>
-                                <a class="change"><i class="change-icon icon-user"></i><span class="change-label">楽天</span> </a>
-                                <a class="change"><i class="change-icon icon-file"></i><span class="change-label">すぐ婚</span> </a>
-                                <a class="change"><i class="change-icon icon-picture"></i> <span class="change-label">Zexy</span> </a>
+                                <a class="page_change selected" id="page_change_total"><i class="change-icon icon-list-alt"></i><span class="change-label">総合</span> </a>
+                                <a class="page_change disabled" id="page_change_gnavi"><i class="change-icon icon-list-alt"></i><span class="change-label">ぐるナビ</span> </a>
+                                <a class="page_change disabled" id="page_change_mwed"><i class="change-icon icon-bookmark"></i><span class="change-label">みんなの</span> </a>
+                                <a class="page_change disabled" id="page_change_mynavi"><i class="change-icon icon-signal"></i> <span class="change-label">マイナビ</span> </a>
+                                <a class="page_change disabled" id="page_change_park"><i class="change-icon icon-comment"></i><span class="change-label">パーク</span> </a>
+                                <a class="page_change disabled" id="page_change_rakuten"><i class="change-icon icon-user"></i><span class="change-label">楽天</span> </a>
+                                <a class="page_change disabled" id="page_change_sugukon"><i class="change-icon icon-file"></i><span class="change-label">すぐ婚</span> </a>
+                                <a class="page_change disabled" id="page_change_zexy"><i class="change-icon icon-picture"></i> <span class="change-label">ゼクシィ</span> </a>
                             </div><!-- /changes --> 
                         </div><!-- /widget-content --> 
                     </div><!-- /widget -->
@@ -95,104 +163,76 @@
                     <div class="widget widget-nopad">
                         <div class="widget-header">
                             <div class="header-titles">
-                                <i class="icon-calendar"></i>
+                                <i class="icon-edit"></i>
                                 <h3 id="page-title"> 総合</h3>
                             </div>
                             <div class="header-buttons">
-                                <button class="btn btn-info">下書保存</button>
-                                <button class="btn btn-info">保　　存</button>
+                                <button class="btn btn-info">確認</button>
                             </div>
                             <div class="clear"></div>
                         </div><!-- /widget-header -->
                         <div class="widget-content">
-                            
                             <form action="" method="post" class="form-horizontal">
-                                <fieldset>
-                                    <div class="control-group">
-                                        <label class="control-label" for="fair_name">フェア名</label>
-                                        <div class="controls">
-                                            <input type="text" name="fair_name" id="fair_name" value="{{$fair->fair_name}}" maxlength="30"/>
-                                        </div>
-                                    </div>
-                                    <div class="control-group">
-                                        <label class="control-label">開催時間</label>
-                                        <div class="controls">
-                                            <select name="start_h" class="hhmm">
-                                                @foreach(Fair::$hList as $value => $view)
-                                                <option value="{{$value}}" 
-                                                        @if ($fair->start_h==$value)
-                                                            selected
-                                                        @endif
-                                                        >{{$view}}</option>
-                                                @endforeach
-                                            </select>
-                                            &nbsp;:&nbsp;
-                                            <select name="start_m" class="hhmm">
-                                                @foreach(Fair::$mList as $value => $view)
-                                                <option value="{{$value}}" 
-                                                        @if ($fair->start_m==$value)
-                                                            selected
-                                                        @endif
-                                                        >{{$view}}</option>
-                                                @endforeach
-                                            </select>
-                                            &nbsp;～&nbsp;
-                                            <select name="end_h" class="hhmm">
-                                                @foreach(Fair::$hList as $value => $view)
-                                                <option value="{{$value}}" 
-                                                        @if ($fair->end_h==$value)
-                                                            selected
-                                                        @endif
-                                                        >{{$view}}</option>
-                                                @endforeach
-                                            </select>
-                                            &nbsp;:&nbsp;
-                                            <select name="end_m" class="hhmm">
-                                                @foreach(Fair::$mList as $value => $view)
-                                                <option value="{{$value}}" 
-                                                        @if ($fair->end_m==$value)
-                                                            selected
-                                                        @endif
-                                                        >{{$view}}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="control-group">
-                                        <label class="control-label" for="description">フェア説明</label>
-                                        <div class="controls">
-                                            <textarea name="description" id="description">{{$fair->description}}</textarea>
-                                        </div>
-                                    </div>
-                                    <div class="control-group">
-                                        <label class="control-label" for="target">対象者</label>
-                                        <div class="controls">
-                                            <input type="text" name="target" id="target" value="{{$fair->target}}" maxlength="50"/>
-                                        </div>
-                                    </div>
-                                    <div class="control-group">
-                                        <label class="control-label" for="other_description">フェア説明</label>
-                                        <div class="controls">
-                                            <textarea name="other_description">{{$fair->other_description}}</textarea>
-                                        </div>
-                                    </div>
-                                    <div class="control-group">
-                                        <div class="controls">
-                                            <label class="radio inline" for="tour_or_pack">
-                                                <input type="radio" name="tour_or_pack" value="{{Fair::TOUR_FLAG}}" {{$fair->tour_flg == Fair::FLG_ON ? 'checked' : ''}}>複数部制選択
-                                            </label>
-                                            <label class="radio inline" for="tour_or_pack">
-                                                <input type="radio" name="tour_or_pack" value="{{Fair::PACK_FLAG}}" {{$fair->pack_flg == Fair::FLG_ON ? 'checked' : ''}}>まとめて予約
-                                            </label>
-                                        </div>
-                                    </div>
-                                </fieldset>
+                                @include('fair.edit.total')
+                                @include('fair.edit.gnavi')
+                                @include('fair.edit.mwed')
+                                @include('fair.edit.mynavi')
+                                @include('fair.edit.park')
                             </form>
-                        </div><!-- /widget-content --> 
+                        </div>
                     </div><!-- /widget -->
                 </div><!-- /span10 -->
             </div><!-- /row -->
         </div><!-- container -->
     </div><!-- /main-inner -->
 </div><!-- /main -->
+@stop
+@section('scripts')
+<script>
+var fairCnt = 1;
+$(document).ready(function(){
+    $('.site_flg').click(function(){
+        view = $(this).attr('view');
+        if ($(this).is(':checked')) {
+            $('#page_change_'+view).removeClass('disabled');
+        } else {
+            $('#page_change_'+view).addClass('disabled');
+            if($('#page_change_'+view).hasClass('selected')) {
+                $('#page_change_total').click();
+            }
+        }
+    });
+    $('.page_change').click(function(){
+        if($(this).hasClass('disabled')||$(this).hasClass('selected')){
+            return;
+        }
+        
+        $selected = $('.page_change.selected').first();
+        $selected.removeClass('selected');
+        $('#'+$selected.attr('id').replace('change_','')).hide();
+        $(this).addClass('selected');
+        $('#'+$(this).attr('id').replace('change_','')).show();
+        $('#page-title').html($(this).children(':nth-child(2)').html());
+    });
+    $('.counter').bind('keydown keyup keypress change',function(){
+        var counterId = $(this).attr('id')+'_count';
+        $('#'+counterId).html($(this).val().length);
+        if($(this).val().length > $(this).attr('limit')) {
+            $(this).addClass('has-error');
+            $('#'+counterId).addClass('text-red');
+        } else {
+            $(this).removeClass('has-error');
+            $('#'+counterId).removeClass('text-red');
+        }
+    });
+    $('.park_fair_flag').click(function(){
+        view = $(this).attr('view');
+        if ($(this).is(':checked')) {
+            $('#'+view).show();
+        } else {
+            $('#'+view).hide();
+        }
+    });
+});
+</script>
 @stop
