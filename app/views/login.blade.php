@@ -16,24 +16,23 @@
     <body>
     <div class="account-container">
 	<div class="content clearfix">
-            <form action="#" method="post">
+            {{Form::open()}}
                 <h1>Login</h1>		
-                    <div class="login-fields">
-                        <div class="field">
-                            <label for="username">Username</label>
-                            <input type="text" id="email" name="email" value="" placeholder="メールアドレス" class="login username-field" />
-                        </div> <!-- /field -->
-                        <div class="field">
-                            <label for="password">Password:</label>
-                            <input type="password" id="password" name="password" value="" placeholder="パスワード" class="login password-field"/>
-                        </div> <!-- /password -->
-                    </div> <!-- /login-fields -->
+                <div class="login-fields">
+                    <div class="field">
+                        <label for="username">Username</label>
+                        <input type="text" id="email" name="email" value="" placeholder="メールアドレス" class="login username-field" />
+                    </div> <!-- /field -->
+                    <div class="field">
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" name="password" value="" placeholder="パスワード" class="login password-field"/>
+                    </div> <!-- /password -->
+                </div> <!-- /login-fields -->
 
-                    <div class="login-actions">
-                        <button class="button btn btn-success btn-large">ログイン</button>
-                    </div> <!-- /login-actions -->
-                    <input type="hidden" name="_token" value="{{csrf_token()}}">
-		</form>
+                <div class="login-actions">
+                    <button class="button btn btn-success btn-large">ログイン</button>
+                </div> <!-- /login-actions -->
+	    {{Form::close()}}
 	</div> <!-- /content -->
     </div> <!-- /account-container -->
         

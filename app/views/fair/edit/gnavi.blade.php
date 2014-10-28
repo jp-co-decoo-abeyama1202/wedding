@@ -72,7 +72,7 @@
                 ?>
                 {{Form::select("gnavi_program_time_".$i."_h",Fair::$hList,$fair->gnavi->$timeH,array('id'=>"gnavi_program_time_".$i."_h",'class'=>'hhmm'))}}
                 &nbsp;:&nbsp;
-                {{Form::select("gnavi_program_time_".$i."_m",FairGnavi::$mList,$fair->gnavi->$timeM,array('id'=>"gnavi_program_time_".$i."_m",'class'=>'hhmm'))}}
+                {{Form::select("gnavi_program_time_".$i."_m",Fair::$mList1,$fair->gnavi->$timeM,array('id'=>"gnavi_program_time_".$i."_m",'class'=>'hhmm'))}}
             </div><!-- /controles -->
             <div class='controls'>
                 <label class="control-label">詳細</label>

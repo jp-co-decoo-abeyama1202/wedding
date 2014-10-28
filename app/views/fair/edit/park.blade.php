@@ -26,8 +26,8 @@
     <div class="control-group">
         <label class="control-label" for="target">フェア紹介文</label>
         <div class="controls">
-            {{Form::textarea('description',$fair->park->description,array('id'=>'park_description','limit'=>'115','class'=>'counter w300','rows'=>'3'))}}
-            &nbsp;<span class="text-inline">(<span id="park_description">{{mb_strlen($fair->park->description)}}</span>/115)</span>
+            {{Form::textarea('park_description',$fair->park->description,array('id'=>'park_description','limit'=>'115','class'=>'counter w300','rows'=>'3'))}}
+            &nbsp;<span class="text-inline">(<span id="park_description_count">{{mb_strlen($fair->park->description)}}</span>/115)</span>
         </div><!-- /controles -->
     </div><!-- /control-group -->
     <!-- 開催内容 -->
@@ -38,7 +38,7 @@
             <?php
                 $value = 'fair_'.$v.'_flag';
             ?>
-            <label class="checkbox inline">{{Form::checkbox('park_'.$value,Fair::FLG_ON,$fair->park->$value==Fair::FLG_ON,array('view'=>'park_fair_'.$v,'class'=>'park_fair_flag'))}}{{$view}}</label></br>
+            <label class="checkbox inline">{{Form::checkbox('park_'.$value,Fair::FLG_ON,$fair->park->$value==Fair::FLG_ON,array('view'=>'park_fair_'.$v,'class'=>'views'))}}{{$view}}</label></br>
             @endforeach
         </div><!-- /controles -->
     </div><!-- /control-group -->

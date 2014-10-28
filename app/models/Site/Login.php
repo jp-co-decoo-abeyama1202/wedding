@@ -19,8 +19,20 @@ class SiteLogin extends Eloquent {
         return $obj;
     }
     
+    public function dummy()
+    {
+        $this->login_id = '';
+        $this->password = '';
+        $this->update_password = '';
+        $this->last_login_at = 0;
+    }
+    
     public function save(array $options = array())
     {
+        if(!Auth::check()) {
+            throw new BadMethodCallException();
+        }
+        $this->updated_id = Auth::user()->id;
         $this->password = Crypt::encrypt($this->password);
         $this->update_password = $this->update_password ? Crypt::encrypt($this->update_password) : $this->update_password;
         parent::save($options);

@@ -610,17 +610,19 @@ CREATE TABLE IF NOT EXISTS `wedding`.`image_categorys` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `wedding`.`tokutens` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `site_id` INT UNSIGNED,
     `type` TINYINT(3) UNSIGNED NOT NULL,
-    `name` VARCHAR(20),
-    `content` VARCHAR(200),
-    `object` VARCHAR(100),
-    `application_method` VARCHAR(100),
-    `fd_span_from` DATETIME,
-    `fd_span_to` DATETIME,
-    `access_view` TINYINT(1) UNSIGNED,
+    `type_no` TINYINT(3) UNSIGNED NOT NULL,
+    `privilege_no` INT UNSIGNED,
+    `position` TINYINT(3) UNSIGNED NOT NULL,
+    `privilege_name` VARCHAR(20) NOT NULL,
+    `privilege_content` VARCHAR(200) NOT NULL,
+    `privilege_object` VARCHAR(100) NOT NULL,
+    `application_method` VARCHAR(100) NOT NULL,
+    `fd_span_from` DATE NOT NULL,
+    `fd_span_to` DATE NOT NULL,
+    `access_view` TINYINT(1) UNSIGNED NOT NULL,
     `created_at` DATETIME NOT NULL,
     `updated_at` DATETIME NOT NULL,
     PRIMARY KEY (`id`),
-    UNIQUE (`site_id`)
+    UNIQUE (`privilege_no`)
 ) ENGINE = InnoDB;

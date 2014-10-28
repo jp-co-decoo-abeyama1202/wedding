@@ -2,18 +2,11 @@
 
 {{-- Page content --}}
 @section('content')
-<aside class="right-side">
-<!-- Main content -->
-    <section class="content-header">
-        <h1>基本情報管理</h1>
-    </section>
-    <section class="content">
-        <div class="row">
-            <div class="col-xs-12">
-                <div class="box box-info">
-                    <div class="box-header">
-                        <h3 class="box-title"><i class="ion ion-ios7-people"> ログイン情報一覧</i></h3>
-                    </div><!-- /.box-header -->
+<div class="main">
+    <div class="main-inner">
+        <div class="container">
+            <div class="row">
+                <div class="span12">
                     <div class="box-body table-responsive">
                         <table id="login_list" class="table table-bordered table-striped">
                             <thead>
@@ -29,19 +22,21 @@
                             <tbody>
                                 @foreach($logins as $login)
                                 <tr>
-                                    <form method="post" role="form" action="{{ URL::to('admin/update/login', $login->id) }}">
+                                    {{Form::open(array('url'=>array('admin/update/login/',$login->id),'role'=>'form'))}}
                                     <td class="text-right">{{ $login->id }}</td>
                                     <td class="text-right">{{ Site::$_site_names[$login->id] }}</td>
-                                    <td><input type="text" name="login_id" class="form-control" value="{{ $login->login_id }}" /></td>
-                                    <td><input type="password" name="password" class="form-control" placeholder="新しいパスワードを入力" /></td>
+                                    <td>{{Form::text('login_id',$login->login_id,array('class'=>'form-control','placeholder'=>'ログインID'))}}</td>
+                                    <td>{{Form::password('password','',array('class'=>'form-control','placeholder'=>'新しいパスワードを入力'))}}</td>
                                     <td>
                                         @if($login->id == SiteRakuten::SITE_LOGIN_ID)
-                                        <input type="password" name="double_password" class="form-control" placeholder="更新用パスワード" />
+                                        {{Form::password('double_password','',array('class'=>'form-control','placeholder'=>'更新用パスワード'))}}
                                         @else
-                                        <input type="hidden" name="double_password" value="" />
+                                        {{Form::hidden('double_password','')}}
                                         @endif
                                     </td>
-                                    <td class="text-center"><input type="submit" class="btn btn-primary" value="修正" /></td>
+                                    <td class="text-center">
+                                        {{Form::submit('修正',array('class'=>'btn btn-primary'))}}
+                                    </td>
                                     </form>
                                 </tr>
                                 @endforeach
@@ -57,11 +52,11 @@
                                 </tr>
                             </tfoot>
                         </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-</aside>
+                    </div><!-- /box-body -->
+                </div><!-- /span12 -->
+            </div><!-- /row -->
+        </div><!-- container -->
+    </div><!-- /main-inner -->
+</div><!-- /main -->
 
 @stop

@@ -1,15 +1,4 @@
 <?php
-
-/*
-|--------------------------------------------------------------------------
-| Application Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register all of the routes for an application.
-| It's a breeze. Simply tell Laravel the URIs it should respond to
-| and give it the Closure to execute when that URI is requested.
-|
-*/
 //ログイン
 Route::get('/login', function(){
     if(Auth::check()) {
@@ -23,7 +12,9 @@ Route::post('/login', array('before' => 'csrf', function(){
     if ( Auth::attempt($inputs) ) {
         return Redirect::to('fair/');
     } else {
-        return Redirect::back()->withInput();
+        return Redirect::back()
+                ->withErrors(array('warning'=>'メールアドレスかパスワードが違います。'))
+                ->withInput();
     }
 }));
 Route::get('/logout',function(){
@@ -89,7 +80,7 @@ Route::group(array('prefix' => 'image'), function() {
     Route::get('detail/{id}', array('uses' => 'ImageController@getDetail'))->where('id','\d+');
     Route::get('upload', array('uses' => 'ImageController@getUpload'));
     Route::post('upload',array('uses' => 'ImageController@postUplaod'));
-    Route::post('edit',array('uses' => 'ImageController@postEdit'));
+    Route::get('edit/{id}',array('uses' => 'ImageController@postEdit'))->where('id','\d+');
     Route::post('confirm',array('uses' => 'ImageController@postConfirm'));
     Route::post('complete',array('uses' => 'ImageController@postComplete'));
 });

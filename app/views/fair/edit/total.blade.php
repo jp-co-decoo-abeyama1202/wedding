@@ -63,11 +63,11 @@
         </div><!-- /controles -->
     </div><!-- /control-group -->
     <!-- 複数部制の場合の時間 -->
-    <div class="control-group" id="tour_area">
+    <div class="control-group">
         <label class="control-label">複数部設定</label>
         <div class="control-group-group">
             @for ($i=1;$i<=5;++$i)
-            <div class="controls">
+            <div class="controls tours" id="tours_{{$i}}" style="{{$fair->tour_count or 1 >= $i ? '':'display:none'}}">
                 <label class="control-label">第{{$i}}部</label>
                 <?php
                     $startH = 'tour_'.$i.'_start_h';
@@ -99,7 +99,7 @@
     <!-- フェア内容 -->
     <div class="control-group" id="fair_1">
         <label class="control-label">フェア内容</label>
-        <div class="control-group-group" id="tour_area">
+        <div class="control-group-group">
             <div class="controls">
                 <label class="control-label">フェア内容</label>
                 {{Form::button('選択')}}
@@ -108,39 +108,37 @@
 
             <div class="controls">
                 <label class="control-label">その他内容</label>
-                {{Form::text('content_1_title','',array('class'=>'counter'))}}
+                {{Form::text('content_title_1','',array('class'=>'counter'))}}
                 &nbsp;<span class="text-inline">(<span id="content_1_title_count">{{mb_strlen('')}}</span>/15)</span>
             </div><!-- /controles -->
             <div class="controls">
                 <label class="control-label">予約有無</label>
-                {{Form::select('content_1_reserve',FairContent::$reserveList)}}
+                {{Form::select('content_reserve_1',FairContent::$reserveList)}}
             </div><!-- /controles -->
             <div class="controls">
                 <label class="control-label">有料/無料</label>
-                {{Form::select('content_1_price_flg',FairContent::$priceFlagList)}}
+                {{Form::select('content_price_flg_1',FairContent::$priceFlagList)}}
             </div><!-- /controles -->
             <div class="controls content_price_field">
                 <label class="control-label">料金</label>
-                {{Form::text('content_1_price','')}}
+                {{Form::text('content_price_1','')}}
             </div><!-- /controles -->
             <div class="controls">
                 <label class="control-label">所用時間</label>
-                {{Form::select("tour_".$i."_start_h",Fair::$hList,0,array('id'=>"tour_".$i."_start_h",'class'=>'hhmm'))}}<span class="text-inline">&nbsp;時間&nbsp;</span>
-                {{Form::select("tour_".$i."_start_m",Fair::$mList,0,array('id'=>"tour_".$i."_start_m",'class'=>'hhmm'))}}<span class="text-inline">&nbsp;分&nbsp;</span>
+                {{Form::select("content_shoyo_h_1",Fair::$hList,0,array('id'=>"content_shoyo_h_1",'class'=>'hhmm'))}}<span class="text-inline">&nbsp;時間&nbsp;</span>
+                {{Form::select("content_shoyo_m_1",Fair::$mList,0,array('id'=>"content_shoyo_m_1",'class'=>'hhmm'))}}<span class="text-inline">&nbsp;分&nbsp;</span>
             </div><!-- /controles -->
             <div class="controls">
                 <label class="control-label">個別フェア<br/>時間設定</label>
-                <label class="checkbox inline" for="pack_flg">
-                {{Form::checkbox('pack_flg',Fair::FLG_ON,$fair->pack_flg,array('id'=>'pack_flg'))}}設定する
-                </label>
-                <div class="controls-inline">
-                {{Form::select("tour_".$i."_start_h",Fair::$hList,0,array('id'=>"tour_".$i."_start_h",'class'=>'hhmm'))}}
+                <label class="checkbox inline" for="pack_flg">{{Form::checkbox('pack_flg',Fair::FLG_ON,$fair->pack_flg,array('id'=>'pack_flg','class'=>'views','view'=>'content_times_1'))}}設定する</label>
+                <div class="controls-inline" id="content_times_1" style="display:none">
+                {{Form::select("content_start_h_1",Fair::$hList,0,array('id'=>"content_start_h_1",'class'=>'hhmm'))}}
                 &nbsp;:&nbsp;
-                {{Form::select("tour_".$i."_start_m",Fair::$mList,0,array('id'=>"tour_".$i."_start_m",'class'=>'hhmm'))}}
+                {{Form::select("content_start_m_1",Fair::$mList,0,array('id'=>"content_start_m_1",'class'=>'hhmm'))}}
                 &nbsp;～&nbsp;
-                {{Form::select("tour_".$i."_end_h",Fair::$hList,0,array('id'=>"tour_".$i."_end_h",'class'=>'hhmm'))}}
+                {{Form::select("content_end_h_1",Fair::$hList,0,array('id'=>"content_end_h_1",'class'=>'hhmm'))}}
                 &nbsp;:&nbsp;
-                {{Form::select("tour_".$i."_end_m",Fair::$mList,0,array('id'=>"tour_".$i."_end_m",'class'=>'hhmm'))}}
+                {{Form::select("content_end_m_1",Fair::$mList,0,array('id'=>"content_end_m_1",'class'=>'hhmm'))}}
                 </div><!-- /controls-inline -->
             </div><!-- /controles -->
         </div><!-- /control-group-group -->

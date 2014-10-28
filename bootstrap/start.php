@@ -29,7 +29,7 @@ $env = $app->detectEnvironment(function()
     switch ($ipaddress) {
         case '192.168.33.11':
         default:
-            return 'testing';
+            return 'test';
     }
 });
 

@@ -84,7 +84,7 @@
                                 <h3 id="page-title"> 総合</h3>
                             </div>
                             <div class="header-buttons">
-                                <button class="btn btn-primary">編　集</button>
+                                <a href="{{URL::to('fair/edit',$fair->id)}}"<button class="btn btn-primary">編　集</button></a>
                                 <button class="btn btn-info">コピー</button>
                                 <button class="btn btn-danger">削　除</button>
                             </div>

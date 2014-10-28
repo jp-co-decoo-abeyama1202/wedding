@@ -2,8 +2,8 @@
     <div class="control-group">
         <label class="control-label">フェア名称</label>
         <div class="controls">
-            {{Form::text('mwed_fair_title',$fair->mwed->fair_title,array('id'=>'mwed_fair_title','limit'=>'30','class'=>'counter'))}}
-            &nbsp;<span class="text-inline">(<span id="mwed_fair_title_count">{{mb_strlen($fair->mwed->fair_title)}}</span>/30)</span>
+            {{Form::text('mwed_fair_name',$fair->mwed->fair_name,array('id'=>'mwed_fair_name','limit'=>'30','class'=>'counter'))}}
+            &nbsp;<span class="text-inline">(<span id="mwed_fair_name_count">{{mb_strlen($fair->mwed->fair_name)}}</span>/30)</span>
             &nbsp;<span class="badge bg-red">必須</span>
         </div><!-- /controles -->
     </div><!-- /control-group -->

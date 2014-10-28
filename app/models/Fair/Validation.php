@@ -11,20 +11,36 @@
  *
  * @author admin-97
  */
-class WorkGnaviValidation {
+class FairValidation {
     
-    /**
-     * @param type $keys
-     * @return array
-     */
-    public static function getAllValidation($keys=array(),$rejects=array()){
+    public static function getAllValidation(){
         $min = array();
         for($i=0;$i<60;++$i) {
             $min[] = sprintf("%02d",$i);
         }
         $min = implode(",",$min);
         $v = array(
-            'fair_title' => array('required','mb_max:35'),
+            'state' => array('required','numeric','in:'.implode(array_keys(Fair::$stateList))),
+            'flg_gnavi' => array('required','numeric','in:0,1'),
+            'flg_mwed' => array('required','numeric','in:0,1'),
+            'flg_mynavi' => array('required','numeric','in:0,1'),
+            'flg_park' => array('required','numeric','in:0,1'),
+            'flg_rakuten' => array('required','numeric','in:0,1'),
+            'flg_sugukon' => array('required','numeric','in:0,1'),
+            'flg_zexy' => array('required','numeric','in:0,1'),
+            'fair_name' => array('required','mb_max:30'),
+            'start_h' => array('required','numeric','in:'.implode(array_keys(Fair::$hList))),
+            'start_m' => array('required','numeric','in:'.implode(array_keys(Fair::$mList))),
+            'description' => array('required','mb_max:100'),
+            'target' => array('required','mb_max:50'),
+            'other_description' => array('required','mb_max:100'),
+            'tour_flg' => array('required','numeric','in:0,1'),
+            'pack_flg' => array('required','numeric','in:0,1'),
+            'image_id' => array('required','numeric'),
+            'image_description' => array('required','mb_max:14'),
+            'reserve' => array('required','numeric','in:'.implode(array_keys(Fair::$reserveList))),
+            
+            
             'fair_time_start_h' => array('numeric','between:0,23'),
             'fair_time_start_m' => array('in:00,05,10,15,20,25,30,35,40,45,50,55'),
             'fair_time_end_h' => array('numeric','between:0,23'),
@@ -73,29 +89,6 @@ class WorkGnaviValidation {
             'customer_count' => array('numeric','digits_between:1,3'),
             'reserve_flg' => array('numeric','in:0,1')
         );
-        foreach($rejects as $r) {
-            if(isset($v[$r])) {
-                unset($v[$r]);
-            }
-        }
-        
-        if(!$keys) {
-            return $v;
-        }
-        $vali = array();
-        foreach($keys as $key) {
-            $vali[$key] = $v[$key];
-        }
-        return $vali;
-    }
-    
-    public static function getFairInputValidation($data)
-    {
-        return Validator::make($data,self::getAllValidation());
-    }
-    
-    public static function getFairUpdateValidation($data)
-    {
-        return Validator::make($data,self::getAllValidation());
+        return $v;
     }
 }

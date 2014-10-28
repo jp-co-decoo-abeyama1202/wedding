@@ -1,15 +1,11 @@
 <?php
 
-class ImageController extends BaseController {
+class ImageController extends BaseController 
+{
 
-    public function showTop()
+    public function getUpload()
     {
-        return View::make('index');
-    }
-    
-    public function showWelcome()
-    {
-        return View::make('hello');
+        return View::make('image/upload');
     }
 
 }

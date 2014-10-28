@@ -22,18 +22,18 @@
             <div class="row">
                 <div class="span2">
                     <div class="widget">
-                        <div class="widget-header"><i class="icon-bookmark"></i>
-                            <h3>Site</h3>
+                        <div class="widget-header"><i class="icon-share"></i>
+                            <h3>ログイン画面</h3>
                         </div><!-- /widget-header -->
                         <div class="widget-content">
                             <div class="shortcuts">
-                                <a href="javascript:;" class="shortcut"><i class="shortcut-icon icon-list-alt"></i><span class="shortcut-label">ぐるナビ</span> </a>
-                                <a href="javascript:;" class="shortcut"><i class="shortcut-icon icon-bookmark"></i><span class="shortcut-label">みんなの</span> </a>
-                                <a href="javascript:;" class="shortcut"><i class="shortcut-icon icon-signal"></i> <span class="shortcut-label">マイナビ</span> </a>
-                                <a href="javascript:;" class="shortcut"> <i class="shortcut-icon icon-comment"></i><span class="shortcut-label">パーク</span> </a>
-                                <a href="javascript:;" class="shortcut"><i class="shortcut-icon icon-user"></i><span class="shortcut-label">楽天</span> </a>
-                                <a href="javascript:;" class="shortcut"><i class="shortcut-icon icon-file"></i><span class="shortcut-label">すぐ婚</span> </a>
-                                <a href="javascript:;" class="shortcut"><i class="shortcut-icon icon-picture"></i> <span class="shortcut-label">Zexy</span> </a>
+                                <a href="https://wedding.gnavi.co.jp/shopadmin/" target="_blank" class="shortcut"><i class="shortcut-icon icon-share"></i><span class="shortcut-label">ぐるナビ</span> </a>
+                                <a href="https://b.mwed.jp" target="_blank" class="shortcut"><i class="shortcut-icon icon-share"></i><span class="shortcut-label">みんなの</span> </a>
+                                <a href="https://wedding.mynavi.jp/client/login/" target="_blank" class="shortcut"><i class="shortcut-icon icon-share"></i> <span class="shortcut-label">マイナビ</span> </a>
+                                <a href="https://wplanet.weddingpark.net" target="_blank" class="shortcut"> <i class="shortcut-icon icon-share"></i><span class="shortcut-label">パーク</span> </a>
+                                <a href="https://wedding.rakuten.co.jp/admin/" target="_blank" class="shortcut"><i class="shortcut-icon icon-share"></i><span class="shortcut-label">楽天</span> </a>
+                                <a href="https://sugukon.com/admin/" target="_blank" class="shortcut"><i class="shortcut-icon icon-share"></i><span class="shortcut-label">すぐ婚</span> </a>
+                                <a href="https://cszebra.zexy.net/id/login/?nw=on" target="_blank" class="shortcut"><i class="shortcut-icon icon-share"></i> <span class="shortcut-label">Zexy</span> </a>
                             </div><!-- /shortcuts --> 
                         </div><!-- /widget-content --> 
                     </div><!-- /widget -->

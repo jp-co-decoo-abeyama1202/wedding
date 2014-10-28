@@ -1,14 +1,7 @@
 <?php
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
- * Description of CustomValidator
- *
+ * 日本語対応の文字数チェック
+ * mb_strlenでチェックしているだけ。
  * @author admin-97
  */
 class CustomValidator extends \Illuminate\Validation\Validator
