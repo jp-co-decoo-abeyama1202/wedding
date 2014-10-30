@@ -16,7 +16,7 @@ class SiteZexy extends Site {
     const SITE_LOGIN_ID = 2;
     const DIR_NAME = 'zexy';
     
-    const BASE_URL = 'https://cszebra.zexy.net/';
+    const BASE_URL = 'https://cszebra.zexy.net';
     //ログイン
     const LOGIN_URL = 'https://cszebra.zexy.net/id/login/';
     //ログアウト
@@ -47,6 +47,13 @@ class SiteZexy extends Site {
     const FAIR_DELETE_PATTERN = '/^https:\/\/cszebra.zexy.net\/nyuko\/hallFairStatusChange\/doDeleteConfirm\?nyukoModeKbn=01&productId=(\d+)/';
     const FAIR_DELETE_COMPLETE_URL = 'https://cszebra.zexy.net/nyuko/hallFairStatusChange/doDeleteComplete';
     const FAIR_DELETE_COMPLETE_PATTERN = '/^https:\/\/cszebra.zexy.net\/nyuko\/hallFairStatusChange\/complete\?nyukoModeKbn=61/';
+    
+    //画像
+    const IMAGE_LIST_TOP = 'https://cszebra.zexy.net/config/photoAlbum/indexReference/';
+    const IMAGE_LIST_TOP_PATTERN = '/^https:\/\/cszebra.zexy.net\/config\/photoAlbum\/indexReference\//';
+    const IMAGE_LIST_URL = 'https://cszebra.zexy.net/config/photoAlbum/doSearch';
+    const IMAGE_LIST_PATTERN = '/^https:\/\/cszebra.zexy.net\/config\/photoAlbum\/doSearch/';
+    const IMAGE_PATTERN = '/\/z\/upload\/\d+\/\d{2}\/photo_album\/(\d+).jpg\?q=\d+/';
     
     const TOKEN_COLUMN_NAME = 'org.apache.struts.taglib.html.TOKEN';
     const COOKIE_PATH = '/home/homepage/html/wedding/app/cookies/zexy.txt';
@@ -823,5 +830,123 @@ class SiteZexy extends Site {
             'yoyakuUketsukePossibleNissuTel' => array('numeric','between:0,99'),
         );
         return Validator::make($data,$v);
+    }
+    
+    /**
+     * 画像取得処理
+     * @param type $chClose
+     * @return boolean
+     * @throws WorkException
+     */
+    public function getImages($startPage=0,$kbn=1,$chClose = true)
+    {
+        //ログイン
+        if(!$this->login(false)) {
+            return false;
+        }
+        $page = $startPage;
+        $kbn = in_array($kbn,array(1,2,3)) ? $kbn : 1;
+        $end = false;
+        try {
+            while(true) {
+                //まずTOPへアクセス
+                $this->_curl->addUrl(self::IMAGE_LIST_TOP);
+                $this->run();
+                if($this->_curl->getInfo('http_code')!==200 || !preg_match(self::IMAGE_LIST_TOP_PATTERN,$this->_curl->getInfo('url'))) {
+                    throw new WorkException(WorkException::CODE_IMAGE_GET_FAILED,$this->_curl);
+                }
+                //ページXの一覧取得
+                $params = array(
+                    'kbn' => sprintf("%02d",$kbn),
+                    'pn' => $page,
+                );
+                $this->_curl->addUrl(self::IMAGE_LIST_URL);
+                $this->_curl->addPostParams($params);
+                $this->run();
+                if($this->_curl->getInfo('http_code')!==200 || !preg_match(self::IMAGE_LIST_PATTERN,$this->_curl->getInfo('url'))) {
+                    throw new WorkException(WorkException::CODE_IMAGE_GET_FAILED,$this->_curl);
+                }
+                //必要データをかき集める
+                $html = str_get_html($this->_curl->getExec(),true,true,DEFAULT_TARGET_CHARSET,false);
+                foreach($html->find('td.vaTop') as $td) {
+
+                    $count = 0;
+                    $table = $td->find('table')[0];
+                    $photoId = $photoTitle = $photoCaption = $photoFileUrl = null;
+                    foreach($table->find('input') as $input) {
+                        echo $input."\n";
+                        switch($input->name){
+                            case 'photoAlbumId':
+                                $photoId = (int)$input->value;
+                                break;
+                            case 'photoTitle':
+                                $photoTitle = $input->value;
+                                break;
+                            case 'photoCaption':
+                                $photoCaption = $input->value;
+                                break;
+                            case 'photoFileUri':
+                                $photoFileUrl = $input->value;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    if(!$photoId) {
+                        throw new WorkException(WorkException::CODE_IMAGE_GET_FAILED,$this->_curl);
+                    }
+                    $image = WorkZexyImage::find($photoId);
+                    if(!$image) {
+                        $image = new WorkZexyImage();
+                    }
+                    $image->id = $photoId;
+                    $image->photo_title = $photoTitle;
+                    $image->photo_caption = $photoCaption;
+                    $image->photo_kbn = $kbn;
+                    //画像取得
+                    $filename = $photoId . ".jpg";
+                    $this->optionReset();
+                    $url = self::BASE_URL . $photoFileUrl;
+                    $this->_curl->addUrl($url);
+                    $this->run();
+                    if($this->_curl->getInfo('http_code')==200) {
+                        file_put_contents($this->getImgPath($filename) , $this->_curl->getExec());
+                    }
+                    //保存
+                    $image->save();
+                }
+                //終了判定
+                $divs = $html->find('div.sf');
+                if(!$divs) {
+                    throw new WorkException(WorkException::CODE_IMAGE_GET_FAILED,$this->_curl);
+                }
+                $max = $now = null;
+                foreach($divs[0]->find('span') as $span) {
+                    if(preg_match('/(\d+)件中 \d+ - (\d+)件を表示/',$span->innertext(),$m)) {
+                        $max = (int)$m[1];
+                        $now = (int)$m[2];
+                    }
+                }
+                if($max === $now) {
+                    $end = true;
+                }
+                $html->clear();
+                if($end) {
+                    error_log("end");
+                    break;
+                }
+                ++$page;
+            }
+        } catch (Exception $e) {
+            error_log($e);
+            if($chClose) {
+                $this->close();
+            }
+            return false;
+        }
+        if($chClose) {
+            $this->close();
+        }
+        return true;
     }
 }

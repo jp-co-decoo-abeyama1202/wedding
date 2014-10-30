@@ -1,8 +1,15 @@
 <?php
+//TOP
+Route::get('/', function(){
+    if(!Auth::check()) {
+        return Redirect::to('/login');
+    }
+    return View::make('index');
+});
 //ログイン
 Route::get('/login', function(){
     if(Auth::check()) {
-        return Redirect::to('fair/');
+        return Redirect::to('/');
     } else {
         return View::make('login');
     }
@@ -10,7 +17,7 @@ Route::get('/login', function(){
 Route::post('/login', array('before' => 'csrf', function(){
     $inputs = Input::only(array('email', 'password'));
     if ( Auth::attempt($inputs) ) {
-        return Redirect::to('fair/');
+        return Redirect::to('/');
     } else {
         return Redirect::back()
                 ->withErrors(array('warning'=>'メールアドレスかパスワードが違います。'))
@@ -67,12 +74,35 @@ Route::group(array('prefix' => 'fair'), function() {
    Route::get('edit/{id}',array('uses' => 'FairController@getEdit'))->where('id','\d+');
    Route::post('confirm',array('uses' => 'FairController@postConfirm'));
    Route::post('complete',array('uses' => 'FairController@postComplete'));
+   Route::get('content/{id}',array('uses' => 'FairController@getContent'))->where('id','\d+');
 });
 //管理関係
 Route::group(array('prefix' => 'admin'), function() {
    Route::get('/', array('uses' => 'AdminController@getIndex'));
    Route::get('infomation',array('uses' => 'AdminController@getInfomation'));   
    Route::post('update/login/{id}',array('uses' => 'AdminController@postLogin'))->where('id','\d+');
+   Route::get('create-user',function(){
+        foreach(Site::$_site_names as $id => $name) {
+            $login = SiteLogin::find($id);
+            if(!$login) {
+                $login = new SiteLogin();
+                $login->id = $id;
+                $login->login_id = '';
+                $login->password = '';
+                $login->update_password = '';
+                $login->save();
+            }
+        }
+        return Redirect::back();
+   });
+   Route::get('holl',array('uses'=>'AdminController@getHoll'));
+   Route::post('holl',array('uses'=>'AdminController@postHoll'));
+});
+//ログインユーザ関係
+Route::group(array('prefix'=>'user'),function(){
+    Route::get('/', array('uses' => 'UserController@getIndex'));
+    Route::get('password', array('uses' => 'UserController@getPassword'));
+    Route::post('password', array('uses' => 'UserController@postPassword'));
 });
 //画像関係
 Route::group(array('prefix' => 'image'), function() {
@@ -83,5 +113,8 @@ Route::group(array('prefix' => 'image'), function() {
     Route::get('edit/{id}',array('uses' => 'ImageController@postEdit'))->where('id','\d+');
     Route::post('confirm',array('uses' => 'ImageController@postConfirm'));
     Route::post('complete',array('uses' => 'ImageController@postComplete'));
+});
+Route::group(array('prefix'=>'special'),function(){
+    Route::get('/', array('uses'=>'SpecialController@getIndex'));
 });
 //Route::controller('fair', 'FairController');

@@ -1,15 +1,10 @@
 <?php
 
-class SpecialController extends BaseController {
-
-    public function showTop()
+class SpecialController extends BaseController 
+{
+    public function getIndex()
     {
-        return View::make('index');
+        return View::make('special/index');
     }
     
-    public function showWelcome()
-    {
-        return View::make('hello');
-    }
-
 }

@@ -75,7 +75,7 @@ class FairGnavi extends FairSite {
         59=> '59',
     );
     public static $fairTypeList = array(
-        'pack_flg' => '会場限定',
+        'tour_flg' => '会場見学',
         'i_wedding_flg' => '模擬挙式',
         'i_reception_flg' => '模擬披露宴',
         'show_flg' => 'ドレスショー見学',
@@ -89,6 +89,30 @@ class FairGnavi extends FairSite {
         'gnavi_limit_flg' => 'ぐるなび限定',
         'just_one_ok_flg' => 'おひとり様参加OK',
         'estimate_bid_flg' => '見積書のご案内',
+    );
+    
+    const FAIR_FLG_WEDDING = 1;
+    const FAIR_FLG_BANQUET = 2;
+    const FAIR_FLG_DRESS_SHOW = 3;
+    const FAIR_FLG_TRYON = 4;
+    const FAIR_FLG_HAIR = 5;
+    const FAIR_FLG_FOOD = 6;
+    const FAIR_FLG_SAMPLING = 7;
+    const FAIR_FLG_ITEM = 8;
+    const FAIR_FLG_QUES = 9;
+    const FAIR_FLG_TOUR = 10;
+    
+    public static $fairFlgList = array(
+        self::FAIR_FLG_WEDDING => '模擬挙式',
+        self::FAIR_FLG_BANQUET => '模擬披露宴',
+        self::FAIR_FLG_DRESS_SHOW => 'ドレスショー見学',
+        self::FAIR_FLG_TRYON => '衣装試着',
+        self::FAIR_FLG_HAIR => 'ヘアメイク体験',
+        self::FAIR_FLG_FOOD => '料理やケーキの展示',
+        self::FAIR_FLG_SAMPLING => '試食会',
+        self::FAIR_FLG_ITEM => 'アイテム展示',
+        self::FAIR_FLG_QUES => '相談会',
+        self::FAIR_FLG_TOUR => '会場見学',
     );
     
     const FAIR_TASTEING_FLG_PAY = 1;

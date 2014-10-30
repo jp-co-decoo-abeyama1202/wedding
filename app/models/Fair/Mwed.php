@@ -73,7 +73,7 @@ class FairMwed extends FairSite
         self::DT_TYPE_BANQUET => '模擬披露宴',
         self::DT_TYPE_SAMPLING => '試食会',
         self::DT_TYPE_COORDINATE => '会場コーディネート',
-        self::DT_TYPE_ITEM => '料理・引き出物などの展示',
+        self::DT_TYPE_ITEM => '婚礼アイテム提示',
         self::DT_TYPE_TRYON => '試着会',
         self::DT_TYPE_ETC_1 => 'その他1',
         self::DT_TYPE_ETC_2 => 'その他2',

@@ -11,13 +11,13 @@ class FairController extends BaseController
     public function getIndex()
     {
         $dates = FairDate::all();
-        return View::make('fair/_index',compact('dates'));
+        return View::make('fair/index',compact('dates'));
     }
     
     public function getDetail($id)
     {
         $fair = Fair::findOrFail($id);
-        return View::make('fair/_detail',compact('fair'));
+        return View::make('fair/detail',compact('fair'));
     }
     
     public function getNew()
@@ -25,7 +25,7 @@ class FairController extends BaseController
         $fair = new Fair();
         $fair->formatting();
         $tokutens = Tokuten::all();
-        return View::make('fair/_edit',compact('fair','tokutens'));
+        return View::make('fair/edit',compact('fair','tokutens'));
     }
     
     public function getEdit($id)
@@ -33,7 +33,13 @@ class FairController extends BaseController
         $fair = Fair::findOrFail($id);
         $fair->formatting();
         $tokutens = Tokuten::all();
-        return View::make('fair/_edit',compact('fair','tokutens'));
+        return View::make('fair/edit',compact('fair','tokutens'));
+    }
+    
+    public function getContent($id)
+    {
+        $contents = Content::all();
+        return View::make('fair/content',compact('id','contents'));
     }
     
     public function postConfirm()

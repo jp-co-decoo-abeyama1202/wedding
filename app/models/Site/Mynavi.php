@@ -4,6 +4,7 @@ class SiteMynavi extends Site {
      * site_logins.idの値
      */
     const SITE_LOGIN_ID = 7;
+    const DIR_NAME = 'mynavi';
     
     const BASE_URL = 'https://wedding.mynavi.jp/client/';
     //ログイン
@@ -31,6 +32,12 @@ class SiteMynavi extends Site {
     const FAIR_DELETE_PATTERN = '/^https:\/\/wedding.mynavi.jp\/client\/fair\/delete\/(\d+)\//';
     const FAIR_DELETED_URL = 'https://wedding.mynavi.jp/client/fair/delete/';
     const FAIR_DELETED_PATTERN = '/^https:\/\/wedding.mynavi.jp\/client\/fair\/delete\//';
+    
+    //画像取得
+    const IMAGE_LIST_URL = 'https://wedding.mynavi.jp/client/album/list/?pageNo=%%PAGE%%';
+    const IMAGE_LIST_PATTERN = '/^https:\/\/wedding.mynavi.jp\/client\/album\/list\/\?pageNo=(\d)+/';
+    const IMAGE_URL = 'https://img.wedding.mynavi.jp/thumb/%%PART_1%%/%%PART_2%%/%%IMAGE_ID%%_sd.jpg';
+    const IMAGE_PATTERN = '/\/\/img.wedding.mynavi.jp\/thumb\/(.{2})\/(.{2})\/(\d+)_sd.jpg\?(\d+)/';
     
     const COOKIE_PATH = '/home/homepage/html/wedding/app/cookies/mynavi.txt';
     const TOKEN_COLUMN_NAME = 'org.apache.struts.taglib.html.TOKEN';
@@ -393,5 +400,162 @@ class SiteMynavi extends Site {
             }
         }
         return $data;
+    }
+    
+    /**
+     * 画像の取得処理
+     * @param type $chClose
+     * @return boolean
+     * @throws WorkException
+     */
+    public function getImages($chClose=true)
+    {
+        if(!$this->login(false)) {
+            return false;
+        }
+        try {
+            $end = false;
+            $i = 1;
+            while(true) {
+                //確認画面から必要データを集める必要がある。
+                $this->_curl->addUrl(str_replace("%%PAGE%%",$i,self::IMAGE_LIST_URL));
+                $this->run();
+                if($this->_curl->getInfo('http_code')!==200||!preg_match(self::IMAGE_LIST_PATTERN,$this->_curl->getInfo('url'))) {
+                    throw new WorkException(WorkException::CODE_MYNAVI_IMAGE_LIST_FAILED,$this->_curl);
+                }
+                //必要データをかき集める
+                $html = str_get_html($this->_curl->getExec(),true,true,DEFAULT_TARGET_CHARSET,false);
+                foreach($html->find('table.listTableL') as $table) {
+                    $image = new WorkMynaviImage();
+                    $tags = array();
+                    $count = 0;
+                    foreach($table->find('tr') as $tr) {
+                        $count++;
+                        switch($count) {
+                            case 1:
+                                //カテゴリID
+                                foreach($tr->find('td') as $td) {
+                                    if($td->class === 'btn') {
+                                        continue;
+                                    }
+                                    if($td->class === 'min') {
+                                        $imgUrl = $td->firstChild()->src;
+                                        if(preg_match(self::IMAGE_PATTERN,$imgUrl,$m)) {
+                                            $id = (int)$m[3];
+                                            $work = WorkMynaviImage::find($id);
+                                            if($work) {
+                                                $image = $work;
+                                            }
+                                            $image->id = $id;
+                                            $image->part_1 = $m[1];
+                                            $image->part_2 = $m[2];
+                                        }
+                                    } else {
+                                        //画像名
+                                        $image->name = $td->innertext();
+                                    }
+                                }
+                                break;
+                            case 2:
+                                //キャプションタイトル
+                                foreach($tr->find('td') as $td) {
+                                    $image->title = $td->innertext();
+                                }
+                                break;
+                            case 3:
+                                //フォトギャラリーに表示
+                                foreach($tr->find('td') as $td) {
+                                    $image->photo_show_flg = $td->innertext() == '表示する' ? 1 : 0;
+                                }
+                                break;
+                            case 4:
+                                //ウェディングフォト診断
+                                foreach($tr->find('td') as $td) {
+                                    $image->inspiration_search_flg = $td->innertext() == '対象' ? 1 : 0;
+                                }
+                                break;
+                            case 5:
+                                //カテゴリ
+                                foreach($tr->find('td') as $td) {
+                                    foreach(WorkMynaviImage::$imageCategoryList as $key => $value) {
+                                        if($value === $td->innerText()) {
+                                            $image->image_category_id = $key;
+                                        }
+                                    }
+                                }
+                                break;
+                            case 6:
+                                //フォト診断キーワード
+                                foreach($tr->find('td') as $td) {
+                                    foreach(explode('/',$td->innertext()) as $tagValue) {
+                                        foreach(WorkMynaviImageTag::$imageTagList as $key => $value) {
+                                            if($value === $tagValue) {
+                                                $tag = new WorkMynaviImageTag();
+                                                $tag->tag_id = $key;
+                                                $tags[] = $tag;
+                                            }
+                                        }
+                                    }
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    $image->save();
+                    foreach($tags as $tag) {
+                        $tag->work_mynavi_image_id = $id;
+                        $tag->save();
+                    }
+                    //画像取得処理
+                    if($id) {
+                        $filename = $id . "_sd.jpg";
+                        $this->optionReset();
+                        $url = str_replace('%%PART_1%%',$image->part_1,self::IMAGE_URL);
+                        $url = str_replace('%%PART_2%%',$image->part_2,$url);
+                        $url = str_replace('%%IMAGE_ID%%',$id,$url);
+                        $this->_curl->addUrl($url);
+                        $this->run();
+                        if($this->_curl->getInfo()['http_code']==200) {
+                            file_put_contents($this->getImgPath($filename) , $this->_curl->getExec());
+                        }
+                    }
+                }
+                //終了チェック
+                $divs = $html->find('div.paging');
+                if(!$divs) {
+                    throw new WorkException(WorkException::CODE_MYNAVI_IMAGE_LIST_FAILED,$this->_curl);
+                }
+                $count = 0;
+                $max = $last = null;
+                foreach($divs[0]->find('span') as $span) {
+                    $count++;
+                    echo "$count :".$span."\n";
+                    if($count === 1) {
+                        $max = (int)$span->innertext();
+                    }
+                    if($count === 3) {
+                        $last = (int)$span->innertext();
+                    }
+                }
+                if($max === $last) {
+                    $end = true;
+                }
+                
+                $html->clear();
+                ++$i;
+                if($end) {
+                    break;
+                }
+            }
+        } catch (Exception $e) {
+            error_log($e);
+            if($chClose) {
+                $this->close();
+            }
+            return false;
+        }
+        $this->close();
+        return true;
     }
 }

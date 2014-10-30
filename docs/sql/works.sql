@@ -69,3 +69,48 @@ CREATE TABLE IF NOT EXISTS `wedding`.`work_rakuten_tokutens` (
   `updated_at` DATETIME NOT NULL COMMENT '更新時間',
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `wedding`.`work_zexy_images`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `wedding`.`work_zexy_images` ;
+
+CREATE TABLE IF NOT EXISTS `wedding`.`work_zexy_images` (
+  `id` INT UNSIGNED NOT NULL COMMENT '画像ID',
+  `photo_title` VARCHAR(100) COMMENT '写真名',
+  `photo_caption` TEXT COMMENT 'キャプション',
+  `photo_kbn` TINYINT(3) UNSIGNED NOT NULL COMMENT 'カテゴリ選択',
+  `created_at` DATETIME NOT NULL COMMENT '作成時間',
+  `updated_at` DATETIME NOT NULL COMMENT '更新時間',
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `wedding`.`work_mynavi_images`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `wedding`.`work_mynavi_images` ;
+DROP TABLE IF EXISTS `wedding`.`work_mynavi_image_tags` ;
+
+CREATE TABLE IF NOT EXISTS `wedding`.`work_mynavi_images` (
+  `id` INT UNSIGNED NOT NULL COMMENT '画像ID',
+  `name` VARCHAR(100) NOT NULL COMMENT '名前',
+  `part_1` VARCHAR(2) NOT NULL COMMENT 'URL素材1',
+  `part_2` VARCHAR(2) NOT NULL COMMENT 'URL素材2',
+  `title` VARCHAR(40) COMMENT 'キャプションタイトル', 
+  `photo_show_flg` TINYINT(1) UNSIGNED NOT NULL COMMENT 'フォトギャラリー 表示する=1,表示しない=0',
+  `inspiration_search_flg` TINYINT(1) UNSIGNED NOT NULL COMMENT 'ウェディングフォト診断 対象=1,対象外=0',
+  `image_category_id` TINYINT(3) UNSIGNED NOT NULL COMMENT 'フォトカテゴリ',
+  `created_at` DATETIME NOT NULL COMMENT '作成時間',
+  `updated_at` DATETIME NOT NULL COMMENT '更新時間',
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS `wedding`.`work_mynavi_image_tags` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `work_mynavi_image_id` INT UNSIGNED NOT NULL COMMENT 'work_mynavi_image.id',
+  `tag_id` INT UNSIGNED NOT NULL COMMENT '名前',
+  `created_at` DATETIME NOT NULL COMMENT '作成時間',
+  `updated_at` DATETIME NOT NULL COMMENT '更新時間',
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`work_mynavi_image_id`) REFERENCES `work_mynavi_images`(`id`)
+) ENGINE = InnoDB;

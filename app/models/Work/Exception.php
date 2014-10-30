@@ -25,6 +25,8 @@ class WorkException extends Exception {
     const CODE_RAKUTEN_LOGOUT_FAILED = 502;
     const CODE_RAKUTEN_TOKUTEN_GET_FAILED = 510;
     const CODE_RAKUTEN_TOKUTEN_UPDATE_FAILED = 511;
+    //マイナビ
+    const CODE_MYNAVI_IMAGE_LIST_FAILED = 701;
     //その他
     const CODE_CONNECT_FAILED = 999;
     
@@ -43,6 +45,7 @@ class WorkException extends Exception {
         self::CODE_RAKUTEN_LOGOUT_FAILED => '楽天：更新画面ログアウト失敗',
         self::CODE_RAKUTEN_TOKUTEN_GET_FAILED => '楽天：特典取得失敗',
         self::CODE_RAKUTEN_TOKUTEN_UPDATE_FAILED => '楽天：特典更新失敗',
+        self::CODE_MYNAVI_IMAGE_LIST_FAILED => 'マイナビ：画像一覧取得失敗',
         self::CODE_CONNECT_FAILED => '接続失敗',
     );
     

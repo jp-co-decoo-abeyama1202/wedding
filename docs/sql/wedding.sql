@@ -626,3 +626,59 @@ CREATE TABLE IF NOT EXISTS `wedding`.`tokutens` (
     PRIMARY KEY (`id`),
     UNIQUE (`privilege_no`)
 ) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `wedding`.`contents`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `wedding`.`contents` ;
+CREATE TABLE IF NOT EXISTS `wedding`.`contents` (
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `type` TINYINT(3) UNSIGNED NOT NULL,
+    `zexy_id` INT UNSIGNED,
+    `mwed_id` INT UNSIGNED,
+    `park_id` INT UNSIGNED,
+    `rakuten_id_1` INT UNSIGNED,
+    `rakuten_id_2` INT UNSIGNED,
+    `rakuten_id_3` INT UNSIGNED,
+    `sugukon_id` INT UNSIGNED,
+    `mynavi_id` INT UNSIGNED,
+    `gnavi_id` INT UNSIGNED,
+    `zexy_name` VARCHAR(30),
+    `mwed_name` VARCHAR(30),
+    `park_name` VARCHAR(30),
+    `rakuten_name_1` VARCHAR(30),
+    `rakuten_name_2` VARCHAR(30),
+    `rakuten_name_3` VARCHAR(30),
+    `sugukon_name` VARCHAR(30),
+    `mynavi_name` VARCHAR(30),
+    `gnavi_name` VARCHAR(30),
+    `created_at` DATETIME NOT NULL,
+    `updated_at` DATETIME NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `wedding`.`holls`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `wedding`.`holls` ;
+CREATE TABLE IF NOT EXISTS `wedding`.`holls` (
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `address` TEXT NOT NULL COMMENT '所在地',
+    `parking` TEXT NOT NULL COMMENT '駐車場',
+    `etc` TEXT NOT NULL COMMENT 'その他',
+    `tel1_1`  VARCHAR(4) NOT NULL,
+    `tel1_2`  VARCHAR(4) NOT NULL,
+    `tel1_3`  VARCHAR(4) NOT NULL,
+    `tel1_syubetsu` TINYINT(3) UNSIGNED NOT NULL,
+    `tel1_tanto` VARCHAR(50) NOT NULL,
+    `tel2_1` VARCHAR(4),
+    `tel2_2` VARCHAR(4),
+    `tel2_3` VARCHAR(4),
+    `tel2_syubetsu` TINYINT(3) UNSIGNED,
+    `tel2_tanto` VARCHAR(50),
+    `inquery_time` VARCHAR(50) NOT NULL,
+    `inquery_support_name` VARCHAR(50) NOT NULL,
+    `created_at` DATETIME NOT NULL,
+    `updated_at` DATETIME NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB;
