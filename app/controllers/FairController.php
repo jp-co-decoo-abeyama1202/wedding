@@ -113,4 +113,10 @@ class FairController extends BaseController
             echo $key ." => ".$value."<br/>\n";
         }
     }
+    
+    public function getList()
+    {
+        $fairs = Fair::all();
+        return View::make('fair/list',compact('fairs'));
+    }
 }

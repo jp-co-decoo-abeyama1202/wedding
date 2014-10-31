@@ -1,19 +1,6 @@
 @extends('layout')
 {{-- Page content --}}
 @section('style')
-<style>
-fieldset.button-set {
-    margin:20px;
-}
-.button-group {
-    margin-bottom:9px;
-    text-align:center;
-}
-.button-group .buttons button {
-    width:300px;
-    margin-bottom:10px;
-}
-</style>
 @stop
 @section('content')
 <div class="main">
@@ -30,17 +17,23 @@ fieldset.button-set {
                                 <div class="button-group">
                                     <div class="buttons">
                                         <a href="{{URL::to('fair/control')}}">
-                                            <button class="btn btn-large btn-info" id="button_reflection">稼働中フェア管理</button>
+                                            <button class="btn btn-large btn-info btn-box" id="button_reflection">
+                                                <i class="icon-calendar"></i>&nbsp;稼働中フェア管理
+                                            </button>
                                         </a>
                                     </div>
                                     <div class="buttons">
                                         <a href="{{URL::to('fair/new')}}">
-                                            <button class="btn btn-large btn-info" id="button_reflection">テンプレート作成</button>
+                                            <button class="btn btn-large btn-info btn-box" id="button_reflection">
+                                                <i class="icon-pencil"></i>&nbsp;テンプレート作成
+                                            </button>
                                         </a>
                                     </div>
                                     <div class="buttons">
                                         <a href="{{URL::to('fair/list')}}">
-                                            <button class="btn btn-large btn-info" id="button_reflection">テンプレート管理</button>
+                                            <button class="btn btn-large btn-info btn-box" id="button_reflection">
+                                                <i class="icon-th-list"></i>&nbsp;テンプレート管理
+                                            </button>
                                         </a>
                                     </div>
                                 </div>

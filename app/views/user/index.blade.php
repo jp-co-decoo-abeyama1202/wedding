@@ -30,17 +30,20 @@ fieldset.button-set {
                                 <div class="button-group">
                                     <div class="buttons">
                                         <a href="{{URL::to('user/password')}}">
-                                            <button class="btn btn-large btn-info" id="button_reflection">パスワード変更</button>
+                                            <button class="btn btn-large btn-info btn-box" id="button_reflection">
+                                                <i class="icon-key"></i>&nbsp;パスワード変更</button>
                                         </a>
                                     </div>
                                     <div class="buttons">
                                         <a href="{{URL::to('user/new')}}">
-                                            <button class="btn btn-large btn-info" id="button_reflection">新規登録</button>
+                                            <button class="btn btn-large btn-info btn-box" id="button_reflection">
+                                                <i class="icon-pencil"></i>&nbsp;新規登録</button>
                                         </a>
                                     </div>
                                     <div class="buttons">
                                         <a href="{{URL::to('user/list')}}">
-                                            <button class="btn btn-large btn-info" id="button_reflection">一覧</button>
+                                            <button class="btn btn-large btn-info btn-box" id="button_reflection">
+                                                <i class="icon-th-list"></i>&nbsp;一覧</button>
                                         </a>
                                     </div>
                                 </div>

@@ -30,27 +30,37 @@ fieldset.button-set {
                                 <div class="button-group">
                                     <div class="buttons">
                                         <a href="{{URL::to('admin/company')}}">
-                                            <button class="btn btn-large btn-info" id="button_reflection">会社情報管理</button>
+                                            <button class="btn btn-large btn-info btn-box" id="button_reflection">
+                                                <i class="icon-info-sign"></i>&nbsp;会社情報管理
+                                            </button>
                                         </a>
                                     </div>
                                     <div class="buttons">
                                         <a href="{{URL::to('admin/holl')}}">
-                                            <button class="btn btn-large btn-info" id="button_reflection">会場情報管理</button>
+                                            <button class="btn btn-large btn-info btn-box" id="button_reflection">
+                                                <i class="icon-flag"></i>&nbsp;会場情報管理
+                                            </button>
                                         </a>
                                     </div>
                                     <div class="buttons">
                                         <a href="{{URL::to('admin/infomation')}}">
-                                            <button class="btn btn-large btn-info" id="button_reflection">ID・PASSWORD管理</button>
+                                            <button class="btn btn-large btn-info btn-box" id="button_reflection">
+                                                <i class="icon-signin"></i>&nbsp;ID・PASSWORD管理
+                                            </button>
                                         </a>
                                     </div>
                                     <div class="buttons">
                                         <a href="{{URL::to('fair/infoupdate')}}">
-                                            <button class="btn btn-large btn-info" id="button_reflection">情報更新管理</button>
+                                            <button class="btn btn-large btn-info btn-box" id="button_reflection">
+                                                <i class="icon-cog"></i>&nbsp;情報更新管理
+                                            </button>
                                         </a>
                                     </div>
                                     <div class="buttons">
                                         <a href="{{URL::to('fair/format')}}">
-                                            <button class="btn btn-large btn-info" id="button_reflection">初期化</button>
+                                            <button class="btn btn-large btn-info btn-box" id="button_reflection">
+                                                <i class="icon-trash"></i>&nbsp;初期化
+                                            </button>
                                         </a>
                                     </div>
                                 </div>

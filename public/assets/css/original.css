@@ -1,3 +1,9 @@
+.badge {
+  cursor:auto!important;
+}
+.clear {
+    clear:both;
+}
 /* Background colors */
 .bg-red,
 .bg-yellow,
@@ -121,4 +127,82 @@
   border-color: #f56954 !important;
   border-width: 2px;
   box-shadow: none;
+}
+/* width */
+.hhmm, 
+.w50
+{
+    width:50px;
+}
+.w30 {
+    width:30px;
+}
+.w80 {
+    width:80px;
+}
+.w100 {
+    width:100px;
+}
+.w150 {
+    width:150px;
+}
+.w300 {
+    width:300px;
+}
+.w450 {
+    width:450px;
+}
+.w100p {
+    width:100%;
+}
+
+/* ボタン内左寄せアイコン */
+.btn.btn-box i { 
+    float:left;
+    margin:4px 5px 0 -4px;
+}
+.btn.btn-large.btn-box i {
+    margin:3px 0 0 0;
+}
+/* ボタンの縦並びグループ(各TOP画面) */
+fieldset.button-set {
+    margin:20px;
+}
+.button-group {
+    margin-bottom:9px;
+    text-align:center;
+}
+.button-group .buttons button {
+    width:300px;
+    margin-bottom:10px;
+}
+
+/* ヘッダに並べるタブ */
+.widget-header .header_tab {
+    float:left;
+    border-right: 1px solid #ddd;
+    border-bottom-color: transparent;
+    cursor:pointer;
+}
+.widget-header .header_tab.selected
+{
+    color: #555555;
+    background-color: #ffffff;
+    border-right: 1px solid #ddd;
+    border-top: 1px solid #ddd;
+    border-bottom-color: transparent;
+    cursor: default;
+}
+.widget-header .header_tab.disabled
+{
+    cursor: default;
+}
+.widget-header .header_tab.disabled i,
+.widget-header .header_tab.disabled h3
+{
+    color:#ddd;
+}
+.widget-header .header-buttons {
+    float:right;
+    margin-right:10px;
 }

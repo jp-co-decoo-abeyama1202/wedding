@@ -30,12 +30,16 @@ fieldset.button-set {
                                 <div class="button-group">
                                     <div class="buttons">
                                         <a href="{{URL::to('special/list')}}">
-                                            <button class="btn btn-large btn-info" id="button_reflection">SC特典管理</button>
+                                            <button class="btn btn-large btn-info btn-box" id="button_reflection">
+                                                <i class="icon-th-list"></i>&nbsp;SC特典管理
+                                            </button>
                                         </a>
                                     </div>
                                     <div class="buttons">
                                         <a href="{{URL::to('special/get')}}">
-                                            <button class="btn btn-large btn-info" id="button_reflection">特典ダウンロード</button>
+                                            <button class="btn btn-large btn-info btn-box" id="button_reflection">
+                                                <i class="icon-download-alt"></i>&nbsp;特典ダウンロード
+                                            </button>
                                         </a>
                                     </div>
                                 </div>

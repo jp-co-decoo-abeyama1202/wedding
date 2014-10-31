@@ -1,4 +1,14 @@
 <?php
+Route::get('/test/zexy/image-upload',function(){
+    $site = new SiteZexy();
+    $site->uploadImages(1);
+});
+Route::get('/test/image-add',function(){
+    $image = new Image();
+    $image->caption = 'テスト画像です。';
+    $image->zexy_photo_kbn = 3;
+    $image->save();
+});
 //TOP
 Route::get('/', function(){
     if(!Auth::check()) {
@@ -75,6 +85,7 @@ Route::group(array('prefix' => 'fair'), function() {
    Route::post('confirm',array('uses' => 'FairController@postConfirm'));
    Route::post('complete',array('uses' => 'FairController@postComplete'));
    Route::get('content/{id}',array('uses' => 'FairController@getContent'))->where('id','\d+');
+   Route::get('list',array('uses'=>'FairController@getList'));
 });
 //管理関係
 Route::group(array('prefix' => 'admin'), function() {

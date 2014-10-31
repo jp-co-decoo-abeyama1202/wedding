@@ -9,44 +9,33 @@
             <div class="row">
                 <div class="span12">
                     <div class="widget widget-nopad">
-                        <div class="widget-header"> <i class="icon-calendar"></i>
-                            <h3> TOP</h3>
+                        <div class="widget-header"> <i class="icon-picture"></i>
+                            <h3> 画像管理</h3>
                         </div><!-- /widget-header -->
                         <div class="widget-content">
                             <fieldset class="button-set">
                                 <div class="button-group">
                                     <div class="buttons">
-                                        <a href="{{URL::to('fair/')}}">
+                                        <a href="{{URL::to('image/upload')}}">
                                             <button class="btn btn-large btn-info btn-box" id="button_reflection">
-                                                <i class="icon-list-alt"></i>&nbsp;フェア管理
+                                                <i class="icon-upload-alt"></i>
+                                                &nbsp;画像アップロード
                                             </button>
                                         </a>
                                     </div>
                                     <div class="buttons">
-                                        <a href="{{URL::to('image/')}}">
+                                        <a href="{{URL::to('image/list')}}">
                                             <button class="btn btn-large btn-info btn-box" id="button_reflection">
-                                                <i class="icon-picture"></i>&nbsp;画像管理
+                                                <i class="icon-th-list"></i>
+                                                &nbsp;SC画像管理
                                             </button>
                                         </a>
                                     </div>
                                     <div class="buttons">
-                                        <a href="{{URL::to('special/')}}">
+                                        <a href="{{URL::to('image/get')}}">
                                             <button class="btn btn-large btn-info btn-box" id="button_reflection">
-                                                <i class="icon-star-empty"></i>&nbsp;特典管理
-                                            </button>
-                                        </a>
-                                    </div>
-                                    <div class="buttons">
-                                        <a href="{{URL::to('user/')}}">
-                                            <button class="btn btn-large btn-info btn-box" id="button_reflection">
-                                                <i class="icon-group"></i>&nbsp;ユーザ管理
-                                            </button>
-                                        </a>
-                                    </div>
-                                    <div class="buttons">
-                                        <a href="{{URL::to('admin/')}}">
-                                            <button class="btn btn-large btn-info btn-box" id="button_reflection">
-                                                <i class="icon-briefcase"></i>&nbsp;基本情報管理
+                                                <i class="icon-download-alt"></i>
+                                                &nbsp;画像ダウンロード
                                             </button>
                                         </a>
                                     </div>

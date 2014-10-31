@@ -485,7 +485,6 @@ abstract class Site {
                     throw new InvalidArgumentException($filepath." is not use");
             }
             $data = file_get_contents($filepath); //ファイル自体を取得
-            $filename = call_user_func("end", explode(DIRECTORY_SEPARATOR, $filepath)); //ファイル名取得
             $fileInfo = new FInfo(FILEINFO_MIME_TYPE);
             $ret[$name] = array(
                 'file_name' => call_user_func("end", explode(DIRECTORY_SEPARATOR, $filepath)), //ファイル名

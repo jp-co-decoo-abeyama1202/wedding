@@ -580,22 +580,30 @@ CREATE TABLE IF NOT EXISTS `wedding`.`site_logins` (
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `wedding`.`site_images`
+-- Table `wedding`.`images`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `wedding`.`images` (
-  `id` INT UNSIGNED NOT NULL,
-  `image_category_id` INT UNSIGNED NOT NULL COMMENT 'image_categorys.id',
-  `rakuten_id` INT UNSIGNED NOT NULL COMMENT '楽天から発行されるID',
-  `zexy_id` INT UNSIGNED NOT NULL COMMENT 'Zexyから発行されるID',
-  `mynavi_id` INT UNSIGNED NOT NULL COMMENT 'マイナビから発行されるID',
-  `created_id` INT UNSIGNED NOT NULL COMMENT '登録者ID',
-  `created_at` DATETIME NOT NULL COMMENT '登録時間',
-  `updated_at` DATETIME NOT NULL COMMENT '更新時間',
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `image_category_id` INT UNSIGNED NOT NULL COMMENT 'image_categorys.id',
+    `caption` VARCHAR(100) NOT NULL COMMENT 'キャプション',
+    `rakuten_id` INT UNSIGNED COMMENT '楽天から発行されるID',
+    `zexy_id` INT UNSIGNED COMMENT 'Zexyから発行されるID',
+    `zexy_photo_kbn` TINYINT(3) UNSIGNED COMMENT 'ZexyのカテゴリID',
+    `mynavi_id` INT UNSIGNED COMMENT 'マイナビから発行されるID',
+    `mynavi_photo_show_flg` TINYINT(1) UNSIGNED COMMENT 'マイナビフォトギャラリーに表示ONOFF',
+    `mynavi_inspiration_search_flg` TINYINT(1) UNSIGNED COMMENT 'マイナビフォトフォト診断ONOFF',
+    `mynavi_category_id` INT UNSIGNED COMMENT 'マイナビから発行されるID',
+    `mynavi_tag_id_1` INT UNSIGNED COMMENT 'マイナビのフォト診断キーワード',
+    `mynavi_tag_id_2` INT UNSIGNED COMMENT 'マイナビのフォト診断キーワード',
+    `mynavi_tag_id_3` INT UNSIGNED COMMENT 'マイナビのフォト診断キーワード',
+    `created_id` INT UNSIGNED NOT NULL COMMENT '登録者ID',
+    `created_at` DATETIME NOT NULL COMMENT '登録時間',
+    `updated_at` DATETIME NOT NULL COMMENT '更新時間',
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `wedding`.`site_image_categorys`
+-- Table `wedding`.`image_categorys`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `wedding`.`image_categorys` (
   `id` INT UNSIGNED NOT NULL,

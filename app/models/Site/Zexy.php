@@ -54,6 +54,15 @@ class SiteZexy extends Site {
     const IMAGE_LIST_URL = 'https://cszebra.zexy.net/config/photoAlbum/doSearch';
     const IMAGE_LIST_PATTERN = '/^https:\/\/cszebra.zexy.net\/config\/photoAlbum\/doSearch/';
     const IMAGE_PATTERN = '/\/z\/upload\/\d+\/\d{2}\/photo_album\/(\d+).jpg\?q=\d+/';
+    //画像アップロード
+    const IMAGE_UPLOAD_TOP_URL = 'https://cszebra.zexy.net/config/photoAlbumEdit/indexRegist';
+    const IMAGE_UPLOAD_TOP_PATTERN = '/^https:\/\/cszebra.zexy.net\/config\/photoAlbumEdit\/indexRegist/';
+    const IMAGE_UPLOAD_URL = 'https://cszebra.zexy.net/config/photoAlbumEdit/';
+    const IMAGE_UPLOAD_PATTERN = '/^https:\/\/cszebra.zexy.net\/config\/photoAlbumEdit\//';
+    const IMAGE_UPLOAD_CONFIRM_URL = 'https://cszebra.zexy.net/config/photoAlbumEdit/doUpload';
+    const IMAGE_UPLOAD_CONFIRM_PATTERN = '/^https:\/\/cszebra.zexy.net\/config\/photoAlbumEdit\/doUpload/';
+    const IMAGE_UPLOAD_REGIST_URL = 'https://cszebra.zexy.net/config/photoAlbumEdit/doRegist';
+    const IMAGE_UPLOAD_REGIST_PATTERN = '/^https:\/\/cszebra.zexy.net\/config\/photoAlbumEdit\/doRegist/';
     
     const TOKEN_COLUMN_NAME = 'org.apache.struts.taglib.html.TOKEN';
     const COOKIE_PATH = '/home/homepage/html/wedding/app/cookies/zexy.txt';
@@ -830,6 +839,145 @@ class SiteZexy extends Site {
             'yoyakuUketsukePossibleNissuTel' => array('numeric','between:0,99'),
         );
         return Validator::make($data,$v);
+    }
+    
+    /**
+     * imagesの指定IDのSC画像情報を元にZexyに画像をアップロードする。
+     * アップロードするとimagesにzexy_idが追加される。
+     * また、work_zexy_imagesに、取得したzexy_idを元にレコードが追加される。
+     * @param int $id images.id
+     * @param bool $chClose
+     * @return boolean
+     * @throws WorkException
+     */
+    public function uploadImages($id,$chClose=true)
+    {
+        //ログイン
+        if(!$this->login(false)) {
+            return false;
+        }
+        try {
+            $image = Image::findOrFail($id);
+            //まず接続
+            $this->_curl->addUrl(self::IMAGE_LIST_TOP);
+            $this->run();
+            if($this->_curl->getInfo('http_code')!==200 || !preg_match(self::IMAGE_LIST_TOP_PATTERN,$this->_curl->getInfo('url'))) {
+                throw new WorkException(WorkException::CODE_IMAGE_UPLOAD_FAILED,$this->_curl);
+            }
+            $this->_curl->addUrl(self::IMAGE_UPLOAD_TOP_URL);
+            $this->run();
+            if($this->_curl->getInfo('http_code')!==200 || !preg_match(self::IMAGE_UPLOAD_TOP_PATTERN,$this->_curl->getInfo('url'))) {
+                throw new WorkException(WorkException::CODE_IMAGE_UPLOAD_FAILED,$this->_curl);
+            }
+            
+            //画像アップ処理
+            $filepath = $image->getFilePath();
+            $fileInfo = new FInfo(FILEINFO_MIME_TYPE);
+            //PHP5.5から使える憎いやつ
+            $curlFile = new CurlFile($filepath,$fileInfo->file($filepath),$image->getFileName());
+            
+            $imgParams = array(
+                'doAjaxUpload' => '1',
+                'photoFile' => $curlFile,
+            );
+            
+            $this->_curl->addUrl(self::IMAGE_UPLOAD_URL);
+            $this->_curl->addPostParams($imgParams);
+            $this->run();
+            if($this->_curl->getInfo('http_code')!==200) {
+                throw new WorkException(WorkException::CODE_IMAGE_UPLOAD_FAILED,$this->_curl);
+            }
+            $ret = json_decode($this->_curl->getExec());
+            if(!$ret || !$ret->result) {
+                throw new WorkException(WorkException::CODE_IMAGE_UPLOAD_FAILED,$this->_curl);
+            }
+            //他情報入力
+            $params = array(
+                'cropWidth' => '',
+                'cropHeight' => '',
+                'cropOffsetX' => '',
+                'cropOffsetY' => '',
+                'photoTitle' => 'sc_image_id='.$image->id,
+                'photoCaption' => 'テスト画像です。後程削除します。',
+                'photoKbn' => sprintf('%02d',$image->zexy_photo_kbn),
+            );
+            $this->optionReset();
+            $this->_curl->addUrl(self::IMAGE_UPLOAD_CONFIRM_URL);
+            $this->_curl->addPostParams($params);
+            $this->run();
+            if($this->_curl->getInfo('http_code')!==200 || !preg_match(self::IMAGE_UPLOAD_CONFIRM_PATTERN,$this->_curl->getInfo('url'))) {
+                throw new WorkException(WorkException::CODE_IMAGE_UPLOAD_FAILED,$this->_curl);
+            }
+            $this->_curl->addUrl(self::IMAGE_UPLOAD_REGIST_URL);
+            $this->_curl->methodPost();
+            $this->run();
+            if($this->_curl->getInfo('http_code')!==200) {
+                throw new WorkException(WorkException::CODE_IMAGE_UPLOAD_FAILED,$this->_curl);
+            }
+            //ID取得処理
+            $html = str_get_html($this->_curl->getExec(),true,true,DEFAULT_TARGET_CHARSET,false);
+            foreach($html->find('td.vaTop') as $td) {
+                $table = $td->find('table')[0];
+                $photoId = $photoTitle = $photoCaption = $photoFileUrl = null;
+                foreach($table->find('input') as $input) {
+                    switch($input->name){
+                        case 'photoAlbumId':
+                            $photoId = (int)$input->value;
+                            break;
+                        case 'photoTitle':
+                            $photoTitle = $input->value;
+                            break;
+                        case 'photoCaption':
+                            $photoCaption = $input->value;
+                            break;
+                        case 'photoFileUri':
+                            $photoFileUrl = $input->value;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                if($photoTitle !== 'sc_image_id='.$id) {
+                    continue;
+                }
+                if(!$photoId) {
+                    throw new WorkException(WorkException::CODE_IMAGE_GET_FAILED,$this->_curl);
+                }
+                $work = WorkZexyImage::find($photoId);
+                if(!$work) {
+                    $work = new WorkZexyImage();
+                }
+                $work->id = $photoId;
+                $work->photo_title = $photoTitle;
+                $work->photo_caption = $photoCaption;
+                $work->photo_kbn = $image->zexy_photo_kbn;
+                //画像取得
+                $filename = $photoId . ".jpg";
+                $this->optionReset();
+                $url = self::BASE_URL . $photoFileUrl;
+                $this->_curl->addUrl($url);
+                $this->run();
+                if($this->_curl->getInfo('http_code')==200) {
+                    file_put_contents($this->getImgPath($filename) , $this->_curl->getExec());
+                }
+                //保存
+                $work->save();
+                //imagesも更新
+                $image->zexy_id = $photoId;
+                $image->save();
+                break;
+            }
+        } catch (Exception $e) {
+            error_log($e);
+            if($chClose) {
+                $this->close();
+            }
+            return false;
+        }
+        if($chClose) {
+            $this->close();
+        }
+        return true;
     }
     
     /**

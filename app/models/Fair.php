@@ -277,6 +277,33 @@ class Fair extends Eloquent
         return $this->hasMany('FairContent');
     }
     
+    public function siteNames($glue=',')
+    {
+        $list = array();
+        if($this->flg_gnavi == self::FLG_ON) {
+            $list[] = 'ぐるナビ';
+        }
+        if($this->flg_mwed == self::FLG_ON) {
+            $list[] = 'みんなの';
+        }
+        if($this->flg_mynavi == self::FLG_ON) {
+            $list[] = 'マイナビ';
+        }
+        if($this->flg_park == self::FLG_ON) {
+            $list[] = 'パーク';
+        }
+        if($this->flg_rakuten == self::FLG_ON) {
+            $list[] = '楽天';
+        }
+        if($this->flg_sugukon == self::FLG_ON) {
+            $list[] = 'すぐ婚';
+        }
+        if($this->flg_zexy == self::FLG_ON) {
+            $list[] = 'ゼクシィ';
+        }
+        return implode($glue,$list);
+    }
+    
     
     // Convert
     public function convertGnavi()

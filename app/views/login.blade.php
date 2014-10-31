@@ -12,6 +12,7 @@
         <link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600" rel="stylesheet">
         {{ HTML::style('assets/css/style.css'); }}
         {{ HTML::style('assets/css/pages/signin.css'); }}
+        {{ HTML::style('assets/css/original.css'); }}
     </head>
     <body>
     <div class="account-container">
