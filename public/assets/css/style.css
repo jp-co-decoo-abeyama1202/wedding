@@ -146,10 +146,10 @@ textarea {
 	list-style: none;
 	
 	border-left: 1px solid #d9d9d9;
-	
-	
 }
-
+.subnavbar .container > ul > li:last-child {
+    border-right: 1px solid #d9d9d9;
+}
 .subnavbar .container > ul > li > a {
 	display: block;
 	

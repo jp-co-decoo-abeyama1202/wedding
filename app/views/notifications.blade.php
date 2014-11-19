@@ -12,7 +12,7 @@
 @if ($message = Session::get('success'))
 <div class="alert alert-success alert-block">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
-    <h4>Success</h4>
+    <h4>完了</h4>
     @if(is_array($message))
     @foreach ($message as $m)
     {{ $m }}
@@ -26,10 +26,10 @@
 @if ($message = Session::get('error'))
 <div class="alert alert-danger alert-block">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
-    <h4>Error</h4>
+    <h4>エラー</h4>
     @if(is_array($message))
     @foreach ($message as $m)
-    {{ $m }}
+    {{ $m }}<br/>
     @endforeach
     @else
     {{ $message }}

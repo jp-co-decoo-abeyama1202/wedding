@@ -53,7 +53,7 @@ return array(
     "url"              => ":attributeは正しいURL形式ではありません。",
     "mb_between" => ":attributeは:min文字以上:max文字以内である必要があります。",
     "mb_max" => ":attributeは:max文字以内である必要があります。",
-    "mb_min" => ":attributeは:max文字以上である必要があります。",
+    "mb_min" => ":attributeは:min文字以上である必要があります。",
 
     'custom' => array(
         'attribute-name' => array(

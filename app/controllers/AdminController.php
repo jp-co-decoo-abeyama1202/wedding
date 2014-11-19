@@ -50,6 +50,25 @@ class AdminController extends BaseController {
         }
     }
     
+    public function postCheckLogin($siteId)
+    {
+        try {
+            $model = isset(Site::$_site_models[$siteId]) ? Site::$_site_models[$siteId] : null;
+            if($model) {
+                $name = Site::$_site_names[$siteId];
+                $site = new $model();
+                if($site->login()) {
+                    return Response::json(array('result'=>'success','message'=>$name.'へのログインに成功しました','last_login_at'=>date('Y-m-d H:i:s',$site::getLogin()->last_login_at)));
+                }
+            }
+            return Response::json(array('result'=>'failed','message'=>$name.'へのログインに失敗しました'));
+        } catch(Exception $ex) {
+            error_log($ex);
+            return Response::json(array('result'=>'failed','message'=>'ログインに失敗しました'));
+        }
+        
+    }
+    
     public function getHoll()
     {
         $holl = Holl::all()->first();
@@ -71,21 +90,24 @@ class AdminController extends BaseController {
             if(!isset($holl->id)) {
                 $holl = new Holl();
             }
-            $list = array(
-                'address','parking','etc','tel1_1','tel1_2','tel1_3','tel1_syubetsu','tel1_tanto','tel2_1','tel2_2','tel2_3','tel2_syubetsu','tel2_tanto','inquery_time','inquery_support_name'
-            );
-            foreach($list as $key) {
-                $holl->$key = Input::get($key);
-            }
-            
+            $inputs = Input::only('address','parking','address_note','tel1_1','tel1_2','tel1_3','tel1_syubetsu','tel1_tanto','tel2_1','tel2_2','tel2_3','tel2_syubetsu','tel2_tanto','inquery_time','inquery_support_name');
+            $holl->fill($inputs);
             $holl->save();
             DB::commit();
             return Redirect::to('admin/holl')->with('success', '会場情報を更新しました。');
-            
         } catch (\Exception $ex) {
-            \Log::error($ex->getMessage());
+            \Log::error($ex);
             DB::rollback();
             return Redirect::back()->with('error', '会場情報の更新に失敗しました。');
         }
+    }
+    
+    public function postHollData()
+    {
+        $holl = Holl::select(array('address','parking','address_note','tel1_1','tel1_2','tel1_3','tel1_syubetsu','tel1_tanto','tel2_1','tel2_2','tel2_3','tel2_syubetsu','tel2_tanto','inquery_time','inquery_support_name'))->first();
+        if(!$holl) {
+            return Response::json(array('result'=>'failed','message'=>'会場情報が入力されていません。'));
+        }
+        return Response::json(array('result'=>'success','params'=>$holl->toArray()));
     }
 }

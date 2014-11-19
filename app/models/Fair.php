@@ -3,8 +3,13 @@
  * フェア情報クラス
  * @author admin-97
  */
+use Illuminate\Database\Eloquent\SoftDeletingTrait;
 class Fair extends Eloquent 
 {
+    use SoftDeletingTrait;
+    protected $guarded = array('id');
+    protected $softDelete = true;
+    
     const FLG_ON = 1;
     const FLG_OFF = 0;
     
@@ -174,20 +179,22 @@ class Fair extends Eloquent
     const RESERVE_TEL_PRIORITY = 4;
     
     public static $reserveList = array(
-        self::RESERVE_NONE => '予約不要',
-        self::RESERVE_NET_ONLY => 'ネット予約のみ',
-        self::RESERVE_TEL_ONLY => '電話予約のみ',
         self::RESERVE_NET_PRIORITY => 'ネット予約優先',
         self::RESERVE_TEL_PRIORITY => '電話予約優先',
     );
     
     public static $reserveDayList = array(
-        0 => '当日',
-        1 => '前日',
-        2 => '2日前',
-        3 => '3日前',
-        4 => '4日前',
-        5 => '5日前',
+        0  => '当日',
+        1  => '前日',
+        2  => '2日前',
+        3  => '3日前',
+        4  => '4日前',
+        5  => '5日前',
+        6  => '6日前',
+        7  => '7日前',
+        8  => '8日前',
+        9  => '9日前',
+        10 => '10日前',
     );
     public static $reserveTimeList = array(
         10 => '10:00',
@@ -201,6 +208,7 @@ class Fair extends Eloquent
     const HOLL_PLACE = 1;
     const HOLL_OTHER = 2;
     public static $hollList = array(
+        null => '--',
         self::HOLL_PLACE => '会場',
         self::HOLL_OTHER => 'その他',
     );
@@ -214,9 +222,29 @@ class Fair extends Eloquent
         self::TEL_SYUBETSU_NOPRICE => '無料TEL',
         self::TEL_SYUBETSU_FAX => 'FAX',
         self::TEL_SYUBETSU_NONE => '指定しない',
-    );      
-            
-    protected $softDelete = true;
+    );
+    
+    public static $fairClasses = array(
+        SiteGnavi::SITE_LOGIN_ID => 'gnavis',
+        SiteMwed::SITE_LOGIN_ID => 'mweds',
+        SiteMynavi::SITE_LOGIN_ID => 'mynavis',
+        SitePark::SITE_LOGIN_ID => 'parks',
+        SiteRakuten::SITE_LOGIN_ID => 'rakutens',
+        SiteSugukon::SITE_LOGIN_ID => 'sugukons',
+        SiteZexy::SITE_LOGIN_ID => 'zexys',
+    );
+    
+    public static function getNewKeys()
+    {
+        $keys = array();
+        foreach(FairValidation::$attrNames as $key => $value) {
+            if(preg_match('/^content_*/',$key)) {
+                continue;
+            }
+            $keys[] = $key;
+        }
+        return $keys;
+    }
     
     public function formatting()
     {
@@ -275,6 +303,33 @@ class Fair extends Eloquent
     public function contents()
     {
         return $this->hasMany('FairContent');
+    }
+    
+    public function isImage($id)
+    {
+        $key = "image_id_".$id;
+        return $this->$key ? true : false;
+    }
+    
+    public function image($id)
+    {
+        return $this->hasOne('Image','id','image_id_'.$id)->first();
+    }
+    
+    public function image_caption($id)
+    {
+        $key = "image_caption_".$id;
+        return $this->$key;
+    }
+    
+    public function tourTime($key,$startOrEnd="start",$glue=":")
+    {
+        if(!in_array($startOrEnd,array('start','end'))) {
+            $startOrEnd = "start";
+        }
+        $hKey = 'tour_'.$key."_".$startOrEnd."_h";
+        $mKey = 'tour_'.$key."_".$startOrEnd."_m";
+        return sprintf("%02d",$this->$hKey) . $glue . sprintf("%02d",$this->$mKey);
     }
     
     public function siteNames($glue=',')

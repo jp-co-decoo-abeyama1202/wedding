@@ -5,6 +5,8 @@
  */
 class Holl extends Eloquent 
 {
+    protected $guarded = array('id');
+    
     const TEL_SYUBETSU_NORMAL = 1;
     const TEL_SYUBETSU_FREE = 2;
     const TEL_SYUBETSU_FAX = 3;
@@ -17,7 +19,7 @@ class Holl extends Eloquent
     public static $attrNames = array(
         'address' => '所在地',
         'parking' => '駐車場',
-        'etc' => 'その他',
+        'address_note' => 'その他',
         'tel1_1' => '電話番号1-1',
         'tel1_2' => '電話番号1-2',
         'tel1_3' => '電話番号1-3',
@@ -37,7 +39,7 @@ class Holl extends Eloquent
         $rules = array(
             'address' => array('required','mb_max:100'),
             'parking' => array('required','mb_max:50'),
-            'etc' => array('mb_max:50'),
+            'address_note' => array('mb_max:50'),
             'tel1_1' => array('required','numeric','mb_max:4'),
             'tel1_2' => array('required','numeric','mb_max:4'),
             'tel1_3' => array('required','numeric','mb_max:4'),

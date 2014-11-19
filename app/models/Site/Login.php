@@ -5,8 +5,6 @@
  * @author admin-97
  */
 class SiteLogin extends Eloquent {
-    
-    public $timestamps = false;
     protected $_decoded = false;
     
     public static function find($id, $columns = array('*'))
@@ -29,10 +27,6 @@ class SiteLogin extends Eloquent {
     
     public function save(array $options = array())
     {
-        if(!Auth::check()) {
-            throw new BadMethodCallException();
-        }
-        $this->updated_id = Auth::user()->id;
         $this->password = Crypt::encrypt($this->password);
         $this->update_password = $this->update_password ? Crypt::encrypt($this->update_password) : $this->update_password;
         parent::save($options);

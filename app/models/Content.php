@@ -11,4 +11,16 @@ class Content extends Eloquent
         self::TYPE_REGULAR => 'レギュラー',
         self::TYPE_IRREGULAR => 'イレギュラー',
     );
+    
+    public function getContentName() 
+    {
+        $name = $this->rakuten_name_1;
+        if($this->rakuten_name_2) {
+            $name.= ':'.$this->rakuten_name_2;
+        }
+        if($this->rakuten_name_3) {
+            $name.= ':'.$this->rakuten_name_3;
+        }
+        return $name;
+    }
 }

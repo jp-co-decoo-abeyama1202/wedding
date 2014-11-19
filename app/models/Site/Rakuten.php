@@ -739,6 +739,75 @@ class SiteRakuten extends Site {
         return true;
     }
     
+    /**
+     * 特典情報更新
+     * @param type $chClose
+     * @return boolean
+     */
+    public function getImages($genreId,$chClose=true) 
+    {   
+        //更新ページログイン処理
+        if(!$this->doubleLogin()) {
+            return false;
+        }
+        try {
+            $this->_curl->addUrl(str_replace('%%TICKET%%',$this->_ticket,self::TOKUTEN_INPUT_URL));
+            $this->run();
+            //チェック
+            $this->curlCheck(WorkException::CODE_RAKUTEN_TOKUTEN_UPDATE_FAILED,self::TOKUTEN_INPUT_PATTERN,$errorStrPattern);
+            //データ内容取得
+            $data = $this->getDetailVal($this->_curl->getExec());
+            //DBのデータで上書き
+            foreach(WorkRakutenTokuten::all() as $tokuten) {
+                //position
+                $data["position[$tokuten->type][]"][$tokuten->type_no] = $tokuten->position;
+                //privilege_name
+                $data["privilege_name[$tokuten->type][]"][$tokuten->type_no] = $tokuten->privilege_name . "_t";
+                //privilege_content
+                $data["privilege_content[$tokuten->type][]"][$tokuten->type_no] = $tokuten->privilege_content;
+                //privilege_object
+                $data["privilege_object[$tokuten->type][]"][$tokuten->type_no] = $tokuten->privilege_object;
+                //application_method
+                $data["application_method[$tokuten->type][]"][$tokuten->type_no] = $tokuten->application_method;
+                //fd_span_from
+                $data["fd_span_from[$tokuten->type][$tokuten->type_no][]"] = explode("-",$tokuten->fd_span_from);
+                //fd_span_to
+                $data["fd_span_to[$tokuten->type][$tokuten->type_no][]"] = explode("-",$tokuten->fd_span_to);
+                //access_view
+                $data["access_view[$tokuten->type][$tokuten->type_no]"] = $tokuten->access_view;
+            }
+            $data['del_privilege_no'] = "";
+            $data['ticket'] = $this->_ticket;
+            $this->optionReset();
+            $this->_curl->addUrl($this->createGetUrl(self::TOKUTEN_CONFIRM_URL, $data));
+            $this->_curl->methodPost();
+            $this->run();
+            $this->curlCheck(WorkException::CODE_RAKUTEN_TOKUTEN_UPDATE_FAILED,self::TOKUTEN_CONFIRM_PATTERN,$errorStrPattern);
+            
+            if(!preg_match("/更新するデータがありません/",$this->_curl->getExec())) {
+                //データ内容取得
+                $updateParams = $this->getDetailVal($this->_curl->getExec());
+                $this->optionReset();
+                $this->_curl->addUrl(self::TOKUTEN_REGIST_URL);
+                $this->_curl->addPostParams($updateParams);
+                $this->run();
+                echo $this->_curl->getExec();
+                $this->curlCheck(WorkException::CODE_RAKUTEN_TOKUTEN_UPDATE_FAILED,self::TOKUTEN_REGIST_PATTERN,$errorStrPattern);
+            }
+            
+        } catch (Exception $e) {
+            error_log($e);
+            if($chClose) {
+                $this->close();
+            }
+            return false;
+        }
+        if($chClose) {
+            $this->close();
+        }
+        return true;
+    }
+    
     public function formatInputData($data)
     {
         //テストデータ加工

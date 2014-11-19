@@ -1,9 +1,4 @@
 USE `wedding` ;
-DROP TABLE IF EXISTS `wedding`.`tokutens`;
-DROP TABLE IF EXISTS `wedding`.`image_categorys`;
-DROP TABLE IF EXISTS `wedding`.`images`;
-DROP TABLE IF EXISTS `wedding`.`site_logins` ;
-DROP TABLE IF EXISTS `wedding`.`administrators` ;
 DROP TABLE IF EXISTS `wedding`.`fair_zexy_content_details` ;
 DROP TABLE IF EXISTS `wedding`.`fair_zexy_contents` ;
 DROP TABLE IF EXISTS `wedding`.`fair_zexys` ;
@@ -19,4 +14,4 @@ DROP TABLE IF EXISTS `wedding`.`fair_mwed_contents` ;
 DROP TABLE IF EXISTS `wedding`.`fair_mweds` ;
 DROP TABLE IF EXISTS `wedding`.`fair_gnavis` ;
 DROP TABLE IF EXISTS `wedding`.`fair_dates` ;
-DROP TABLE IF EXISTS `wedding`.`fairs` ;
+DROP TABLE IF EXISTS `wedding`.`fairs`;

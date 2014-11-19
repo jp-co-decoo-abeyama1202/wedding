@@ -63,7 +63,10 @@ class SiteZexy extends Site {
     const IMAGE_UPLOAD_CONFIRM_PATTERN = '/^https:\/\/cszebra.zexy.net\/config\/photoAlbumEdit\/doUpload/';
     const IMAGE_UPLOAD_REGIST_URL = 'https://cszebra.zexy.net/config/photoAlbumEdit/doRegist';
     const IMAGE_UPLOAD_REGIST_PATTERN = '/^https:\/\/cszebra.zexy.net\/config\/photoAlbumEdit\/doRegist/';
-    
+    //画像編集
+    const IMAGE_EDIT_URL = 'https://cszebra.zexy.net/config/photoAlbumEdit/indexEdit?photoAlbumId=%%IMAGE_ID%%';
+    const IMAGE_EDIT_PATTERN = '/^https:\/\/cszebra.zexy.net\/config\/photoAlbumEdit\/indexEdit\?photoAlbumId=(\d+)/';
+            
     const TOKEN_COLUMN_NAME = 'org.apache.struts.taglib.html.TOKEN';
     const COOKIE_PATH = '/home/homepage/html/wedding/app/cookies/zexy.txt';
     
@@ -850,7 +853,7 @@ class SiteZexy extends Site {
      * @return boolean
      * @throws WorkException
      */
-    public function uploadImages($id,$chClose=true)
+    public function uploadImage($id,$chClose=true)
     {
         //ログイン
         if(!$this->login(false)) {
@@ -858,15 +861,24 @@ class SiteZexy extends Site {
         }
         try {
             $image = Image::findOrFail($id);
+            if($image->upload_zexy != Image::UPLOAD_REGIST) {
+                return true;
+            }
             //まず接続
             $this->_curl->addUrl(self::IMAGE_LIST_TOP);
             $this->run();
             if($this->_curl->getInfo('http_code')!==200 || !preg_match(self::IMAGE_LIST_TOP_PATTERN,$this->_curl->getInfo('url'))) {
                 throw new WorkException(WorkException::CODE_IMAGE_UPLOAD_FAILED,$this->_curl);
             }
-            $this->_curl->addUrl(self::IMAGE_UPLOAD_TOP_URL);
+            $url = self::IMAGE_UPLOAD_TOP_URL;
+            $pattern = self::IMAGE_UPLOAD_TOP_PATTERN;
+            if($image->zexy_id) {
+                $url = str_replace('%%IMAGE_ID%%',$image->zexy_id,self::IMAGE_EDIT_URL);
+                $pattern = self::IMAGE_EDIT_PATTERN;
+            }
+            $this->_curl->addUrl($url);
             $this->run();
-            if($this->_curl->getInfo('http_code')!==200 || !preg_match(self::IMAGE_UPLOAD_TOP_PATTERN,$this->_curl->getInfo('url'))) {
+            if($this->_curl->getInfo('http_code')!==200 || !preg_match($pattern,$this->_curl->getInfo('url'))) {
                 throw new WorkException(WorkException::CODE_IMAGE_UPLOAD_FAILED,$this->_curl);
             }
             
@@ -898,7 +910,7 @@ class SiteZexy extends Site {
                 'cropOffsetX' => '',
                 'cropOffsetY' => '',
                 'photoTitle' => 'sc_image_id='.$image->id,
-                'photoCaption' => 'テスト画像です。後程削除します。',
+                'photoCaption' => $image->caption,
                 'photoKbn' => sprintf('%02d',$image->zexy_photo_kbn),
             );
             $this->optionReset();
@@ -962,13 +974,17 @@ class SiteZexy extends Site {
                 }
                 //保存
                 $work->save();
-                //imagesも更新
+                //imageも更新
                 $image->zexy_id = $photoId;
+                $image->upload_zexy = Image::UPLOADED;
+                if($image->checkUpload()) {
+                    $image->is_upload = Image::UPLOADED;
+                }
                 $image->save();
                 break;
             }
         } catch (Exception $e) {
-            error_log($e);
+            \Log::error($e);
             if($chClose) {
                 $this->close();
             }
@@ -1005,9 +1021,10 @@ class SiteZexy extends Site {
                 }
                 //ページXの一覧取得
                 $params = array(
-                    'kbn' => sprintf("%02d",$kbn),
+                    'photoKbn' => sprintf("%02d",$kbn),
                     'pn' => $page,
                 );
+                echo "page:".$page."\n";
                 $this->_curl->addUrl(self::IMAGE_LIST_URL);
                 $this->_curl->addPostParams($params);
                 $this->run();
@@ -1017,12 +1034,10 @@ class SiteZexy extends Site {
                 //必要データをかき集める
                 $html = str_get_html($this->_curl->getExec(),true,true,DEFAULT_TARGET_CHARSET,false);
                 foreach($html->find('td.vaTop') as $td) {
-
                     $count = 0;
                     $table = $td->find('table')[0];
                     $photoId = $photoTitle = $photoCaption = $photoFileUrl = null;
                     foreach($table->find('input') as $input) {
-                        echo $input."\n";
                         switch($input->name){
                             case 'photoAlbumId':
                                 $photoId = (int)$input->value;
@@ -1066,7 +1081,11 @@ class SiteZexy extends Site {
                 //終了判定
                 $divs = $html->find('div.sf');
                 if(!$divs) {
-                    throw new WorkException(WorkException::CODE_IMAGE_GET_FAILED,$this->_curl);
+                    $html->clear();
+                    $upload = ImageUpload::getZexy($kbn);
+                    $upload->state = ImageUpload::STATE_OFF;
+                    $upload->save();
+                    break;
                 }
                 $max = $now = null;
                 foreach($divs[0]->find('span') as $span) {
@@ -1080,10 +1099,16 @@ class SiteZexy extends Site {
                 }
                 $html->clear();
                 if($end) {
-                    error_log("end");
+                    $upload = ImageUpload::getZexy($kbn);
+                    $upload->state = ImageUpload::STATE_OFF;
+                    $upload->save();
                     break;
                 }
                 ++$page;
+                if($startPage + 8 < $page) {
+                    Queue::push('QueueImageDownload',array('id'=>self::SITE_LOGIN_ID,'kbn'=>$kbn,'page'=>$page));
+                    break;
+                }
             }
         } catch (Exception $e) {
             error_log($e);

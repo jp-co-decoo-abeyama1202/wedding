@@ -24,7 +24,6 @@
 
             <!-- Content -->
             @yield('content')
-
         </div> <!-- /container -->
         
         {{ HTML::script('assets/js/jquery-1.7.2.min.js')}}

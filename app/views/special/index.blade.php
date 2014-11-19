@@ -1,19 +1,6 @@
 @extends('layout')
 {{-- Page content --}}
 @section('style')
-<style>
-fieldset.button-set {
-    margin:20px;
-}
-.button-group {
-    margin-bottom:9px;
-    text-align:center;
-}
-.button-group .buttons button {
-    width:300px;
-    margin-bottom:10px;
-}
-</style>
 @stop
 @section('content')
 <div class="main">
@@ -31,14 +18,14 @@ fieldset.button-set {
                                     <div class="buttons">
                                         <a href="{{URL::to('special/list')}}">
                                             <button class="btn btn-large btn-info btn-box" id="button_reflection">
-                                                <i class="icon-th-list"></i>&nbsp;SC特典管理
+                                                <div><i class="icon-th-list"></i>SC特典管理</div>
                                             </button>
                                         </a>
                                     </div>
                                     <div class="buttons">
-                                        <a href="{{URL::to('special/get')}}">
+                                        <a href="{{URL::to('special/download')}}">
                                             <button class="btn btn-large btn-info btn-box" id="button_reflection">
-                                                <i class="icon-download-alt"></i>&nbsp;特典ダウンロード
+                                                <div><i class="icon-download-alt"></i>特典ダウンロード</div>
                                             </button>
                                         </a>
                                     </div>

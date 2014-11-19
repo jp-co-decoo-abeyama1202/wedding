@@ -119,4 +119,86 @@ class FairController extends BaseController
         $fairs = Fair::all();
         return View::make('fair/list',compact('fairs'));
     }
+    
+    public function postPageValidation($page)
+    {
+        list($result,$messages) = FairValidation::pageValidation($page);
+        $m = array();
+        if(is_array($messages)) {
+            foreach($messages as $key => $values) {
+                foreach($values as $v) {
+                    $m[] = $v;
+                }
+            }
+        } else {
+            $m[] = $messages;
+        }
+        $m = array_unique($m);
+        $response = array(
+            'result' => $result ? 'success' : 'failed',
+            'message' => implode('<br/>',$m),
+        );
+        return Response::json($response);
+    }
+    
+    public function postPageLast()
+    {
+        $keys = Fair::getNewKeys();
+        $inputs = Input::only($keys);
+        $fair = new Fair();
+        $fair->fill($inputs);
+        //FairContents作成
+        $fairContents = array();
+        for($i=1;$i<=8;++$i) {
+            if(Input::get('content_id_'.$i)) {
+                $keys = array(
+                    'content_id_'.$i => 'content_id',
+                    'content_text_'.$i => 'name',
+                    'content_title_'.$i => 'title', 
+                    'content_shoyo_h_'.$i => 'shoyo_h', 
+                    'content_shoyo_m_'.$i => 'shoyo_m',
+                    'content_description_'.$i => 'description', 
+                    'content_reserve_'.$i => 'reserve', 
+                    'content_price_flg_'.$i => 'price_flg', 
+                    'content_price_'.$i => 'price', 
+                    'content_stock_'.$i => 'stock', 
+                );
+                $params = array();
+                foreach($keys as $key => $contentKey) {
+                    $params[$contentKey] = Input::get($key);
+                }
+                $content = new FairContent();
+                $content->fill($params);
+                $fairContents[] = $content;
+            }
+        }
+        
+        return View::make('fair/edit/page9_body',compact('fair','fairContents'));
+    }
+    
+    public function postPageGnaviFreeword()
+    {
+        $contentIds = array();
+        for($i=1;$i<=8;$i++) {
+            if(Input::get('content_id_'.$i)) {
+                $contentIds[] = Input::get('content_id_'.$i);
+            }
+        }
+        if(!$contentIds) {
+            return Response::json(array('result'=>'failed','message'=>'フェア内容が設定されていません。'));
+        }
+        $message = array();
+        foreach(Content::whereIn('id',$contentIds)->get() as $content) {
+            if(!$content->gnavi_id) {
+                $message[] = $content->getContentName();
+            } else if($content->rakuten_name_3) {
+                $message[] = $content->rakuten_name_2;
+                $message[] = $content->rakuten_name_3;
+            } else if($content->rakuten_name_2) {
+                $message[] = $content->rakuten_name_2;
+            }
+        }
+        $message = array_unique($message);
+        return Response::json(array('result'=>'success','message'=>implode(',',$message)));
+    }
 }

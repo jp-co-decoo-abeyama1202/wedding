@@ -5,6 +5,8 @@
  * @author admin-97
  */
 class FairContent extends Eloquent {
+    protected $guarded = array('id');
+    
     const RESERVE_NONE = 0;
     const RESERVE_PRIORITY = 1;
     const RESERVE_REQUIRED = 2;

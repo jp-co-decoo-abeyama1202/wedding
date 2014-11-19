@@ -38,6 +38,14 @@ class SiteMynavi extends Site {
     const IMAGE_LIST_PATTERN = '/^https:\/\/wedding.mynavi.jp\/client\/album\/list\/\?pageNo=(\d)+/';
     const IMAGE_URL = 'https://img.wedding.mynavi.jp/thumb/%%PART_1%%/%%PART_2%%/%%IMAGE_ID%%_sd.jpg';
     const IMAGE_PATTERN = '/\/\/img.wedding.mynavi.jp\/thumb\/(.{2})\/(.{2})\/(\d+)_sd.jpg\?(\d+)/';
+    //画像アップロード
+    const IMAGE_UPLOAD_TOP_URL = 'https://wedding.mynavi.jp/client/album/list/';
+    const IMAGE_UPLOAD_TOP_PATTERN = '/^https:\/\/wedding.mynavi.jp\/client\/album\/list\//';
+    const IMAGE_UPLOAD_SUCCESS_PATTERN = '/^https:\/\/wedding.mynavi.jp\/client\/..\/client\/album\/list\/\?isPopup=false\&saveMsgFlg=true/';
+    const IMAGE_UPLOAD_URL = 'https://wedding.mynavi.jp/client/album/list/imageUpload/';
+    const IMAGE_UPLOAD_PATTERN = '/^https:\/\/wedding.mynavi.jp\/client\/album\/list\/imageUpload\//';
+    const IMAGE_UPDATE_URL = 'https://wedding.mynavi.jp/client/album/list/edit/?imageId=%%URL%%&listBackUrl=%2Fclient%2Falbum%2Flist%2F%3FisPopup%3Dfalse%26search%3Dsmt';
+    const IMAGE_UPDATE_PATTERN = '/^https:\/\/wedding.mynavi.jp\/client\/..\/client\/album\/list\/\?isPopup=false\&search=smt/';
     
     const COOKIE_PATH = '/home/homepage/html/wedding/app/cookies/mynavi.txt';
     const TOKEN_COLUMN_NAME = 'org.apache.struts.taglib.html.TOKEN';
@@ -492,7 +500,7 @@ class SiteMynavi extends Site {
                                             if($value === $tagValue) {
                                                 $tag = new WorkMynaviImageTag();
                                                 $tag->tag_id = $key;
-                                                $tags[] = $tag;
+                                                $tags[] = $key;
                                             }
                                         }
                                     }
@@ -502,11 +510,12 @@ class SiteMynavi extends Site {
                                 break;
                         }
                     }
-                    $image->save();
-                    foreach($tags as $tag) {
-                        $tag->work_mynavi_image_id = $id;
-                        $tag->save();
+                    for($i=0;$i<count($tags);++$i) {
+                        $tag = 'tag_id_'.($i+1);
+                        $image->$tag = $tags[$i];
                     }
+                    $image->save();
+                    
                     //画像取得処理
                     if($id) {
                         $filename = $id . "_sd.jpg";
@@ -553,6 +562,145 @@ class SiteMynavi extends Site {
             if($chClose) {
                 $this->close();
             }
+            return false;
+        }
+        $this->close();
+        return true;
+    }
+    
+    public function uploadImage($id,$chClose=true)
+    {
+        if(!$this->login(false)) {
+            return false;
+        }
+        try {
+            $image = Image::findOrFail($id);
+            if($image->upload_mynavi != Image::UPLOAD_REGIST) {
+                //return true;
+            }
+            //画像アップ処理
+            $filepath = $image->getFilePath();
+            $fileInfo = new FInfo(FILEINFO_MIME_TYPE);
+            //PHP5.5から使える憎いやつ
+            $curlFile = new CurlFile($filepath,$fileInfo->file($filepath),$image->getFileName());
+            $imgParams = array(
+                'imageId' => $image->mynavi_id ? $image->mynavi_id : '',
+                'imageFile' => $curlFile,
+            );
+            $this->_curl->addUrl(self::IMAGE_UPLOAD_URL);
+            $this->_curl->addPostParams($imgParams);
+            $this->run();
+            if($this->_curl->getInfo('http_code')!==200) {
+                throw new WorkException(WorkException::CODE_IMAGE_UPLOAD_FAILED,$this->_curl);
+            }
+            $ret = json_decode($this->_curl->getExec());
+            if(!$ret || !isset($ret->imageId)) {
+                throw new WorkException(WorkException::CODE_IMAGE_UPLOAD_FAILED,$this->_curl);
+            }
+            
+            //必要情報の取得
+            $url = self::IMAGE_UPLOAD_TOP_URL;
+            $pattern = self::IMAGE_UPLOAD_TOP_PATTERN;
+            if($image->mynavi_id) {
+                $url = str_replace('%%IMAGE_ID%%',$image->mynavi_id,self::IMAGE_UPDATE_URL);
+                $pattern = self::IMAGE_UPDATE_PATTERN;
+            }
+            $this->_curl->addUrl($url);
+            $this->run();
+            if($this->_curl->getInfo('http_code')!==200||!preg_match($pattern,$this->_curl->getInfo('url'))) {
+                throw new WorkException(WorkException::CODE_IMAGE_UPLOAD_FAILED,$this->_curl);
+            }
+            $params = array();
+            $html = str_get_html($this->_curl->getExec(),true,true,DEFAULT_TARGET_CHARSET,false);
+            foreach($html->find('#albumListForm') as $form) {
+                foreach($form->find('input') as $input) {
+                    $params[$input->name] = $input->value;
+                }
+            }
+            $html->clear();
+            //params に imageの内容を代入していく
+            $params['name'] = 'sc_image_id='.$image->id;
+            $params['title'] = $image->caption;
+            $params['photoShowFlg'] = $image->mynavi_photo_show_flg == Fair::FLG_ON ? 'true' : 'false';
+            $params['inspirationSearchFlg'] = $image->mynavi_inspiration_search_flg == Fair::FLG_ON ? 'true' : 'false';
+            $params['imageCategoryId'] = $image->mynavi_category_id;
+            $tagIds = array();
+            if($image->mynavi_tag_id_1) {
+                $tagIds[] = $image->mynavi_tag_id_1;
+            }
+            if($image->mynavi_tag_id_2) {
+                $tagIds[] = $image->mynavi_tag_id_2;
+            }
+            if($image->mynavi_tag_id_3) {
+                $tagIds[] = $image->mynavi_tag_id_3;
+            }
+            if($tagIds) {
+                $params['imageTagId'] = $tagIds;
+            }
+            //その他追加要素
+            $params2 = array(
+                'imageFile' => $curlFile,
+            );
+            $params['imageId'] = $ret->imageId;
+            $params['path'] = $ret->imagePath;
+            $params['regist'] = '登録する';
+            
+            //var_dump($body);
+            //データの貼り付け
+            $this->optionReset();
+            $this->_curl->addUrl($this->createGetUrl(self::IMAGE_UPLOAD_TOP_URL, $params));
+            $this->_curl->addPostParams($params2);
+            $this->run();
+            echo $this->_curl->getExec();
+            if($this->_curl->getInfo('http_code')!==200||!preg_match(self::IMAGE_UPLOAD_SUCCESS_PATTERN,$this->_curl->getInfo('url'))) {
+                throw new WorkException(WorkException::CODE_IMAGE_UPLOAD_FAILED,$this->_curl);
+            }
+            if(!$image->mynavi_id) {
+                //ID取得の旅
+                $html = str_get_html($this->_curl->getExec(),true,true,DEFAULT_TARGET_CHARSET,false);
+                $check = false;
+                foreach($html->find('.listTableL') as $table) {
+                    $imageId = null;
+                    foreach($table->find('td') as $td) {
+                        if(!$imageId) {
+                            foreach($td->find('input') as $input) {
+                                echo $input."\n\n";
+                                error_log($input->name." => ".$input->value);
+                                if($input->name === 'multiProcessImageId') {
+                                    $imageId = $input->value;
+                                    break;
+                                }
+                            }
+                        }
+                        if(preg_match('/sc_image_id=(\d)+/',$td->plaintext,$m)) {
+                            if($m[1] == $image->id) {
+                                $check = true;
+                                break;
+                            }
+                        }
+                    }
+                    if($check) {
+                        break;
+                    }
+                }
+                $html->clear();
+                if($check) {
+                    DB::beginTransaction();
+                    $image->mynavi_id = $imageId;
+                    $image->upload_mynavi = Image::UPLOADED;
+                    if($image->checkUpload()) {
+                        $image->is_upload = Image::UPLOADED;
+                    }
+                    $image->save();
+                    DB::commit();
+                }
+            }
+        } catch (Exception $e) {
+            error_log($e);
+            if($chClose) {
+                $this->close();
+            }
+            DB::rollback();
             return false;
         }
         $this->close();

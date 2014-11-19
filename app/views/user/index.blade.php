@@ -1,19 +1,6 @@
 @extends('layout')
 {{-- Page content --}}
 @section('style')
-<style>
-fieldset.button-set {
-    margin:20px;
-}
-.button-group {
-    margin-bottom:9px;
-    text-align:center;
-}
-.button-group .buttons button {
-    width:300px;
-    margin-bottom:10px;
-}
-</style>
 @stop
 @section('content')
 <div class="main">
@@ -31,19 +18,22 @@ fieldset.button-set {
                                     <div class="buttons">
                                         <a href="{{URL::to('user/password')}}">
                                             <button class="btn btn-large btn-info btn-box" id="button_reflection">
-                                                <i class="icon-key"></i>&nbsp;パスワード変更</button>
+                                                <div><i class="icon-key"></i>パスワード変更</div>
+                                            </button>
                                         </a>
                                     </div>
                                     <div class="buttons">
                                         <a href="{{URL::to('user/new')}}">
                                             <button class="btn btn-large btn-info btn-box" id="button_reflection">
-                                                <i class="icon-pencil"></i>&nbsp;新規登録</button>
+                                                <div><i class="icon-pencil"></i>新規登録</div>
+                                            </button>
                                         </a>
                                     </div>
                                     <div class="buttons">
                                         <a href="{{URL::to('user/list')}}">
                                             <button class="btn btn-large btn-info btn-box" id="button_reflection">
-                                                <i class="icon-th-list"></i>&nbsp;一覧</button>
+                                                <div><i class="icon-th-list"></i>一覧</div>
+                                            </button>
                                         </a>
                                     </div>
                                 </div>

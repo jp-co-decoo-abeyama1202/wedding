@@ -75,7 +75,7 @@
                     <div class="widget widget-nopad">
                         <div class="widget-header">
                             <div class="header_title">
-                                <i class="icon-edit"></i>
+                                <i class="icon-key"></i>
                                 <h3 id="page-title"> パスワード変更</h3>
                             </div>
                         </div><!-- /widget-header -->

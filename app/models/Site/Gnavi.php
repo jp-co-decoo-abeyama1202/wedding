@@ -72,7 +72,7 @@ class SiteGnavi extends Site {
     
     public function getFairs($year,$month)
     {
-        if(!$this->login()) {
+        if(!$this->login(false)) {
             return;
         }
         if($month < 1 || $month > 12) {

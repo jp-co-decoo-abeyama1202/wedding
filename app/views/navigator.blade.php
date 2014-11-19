@@ -33,7 +33,9 @@
                         <li><a href="{{URL::to('image/')}}">画像管理TOP</a></li>
                         <li><a href="{{URL::to('image/upload')}}">画像アップロード</a></li>
                         <li><a href="{{URL::to('image/list')}}">SC画像管理</a></li>
-                        <li><a href="{{URL::to('image/get')}}">画像ダウンロード</a></li>
+                        <li><a href="{{URL::to('image/category')}}">画像カテゴリ管理</a></li>
+                        <li><a href="{{URL::to('image/download')}}">画像ダウンロード</a></li>
+                        <li><a href="{{URL::to('image/linking')}}">ダウンロード画像紐付</a></li>
                     </ul>
                 </li>
                 <li class="dropdown {{preg_match('/special/',URL::current()) ? 'active':''}}">
@@ -41,7 +43,7 @@
                     <ul class="dropdown-menu">
                         <li><a href="{{URL::to('special/')}}">特典管理TOP</a></li>
                         <li><a href="{{URL::to('special/list')}}">SC特典管理</a></li>
-                        <li><a href="{{URL::to('special/get')}}">特典ダウンロード</a></li>
+                        <li><a href="{{URL::to('special/download')}}">特典ダウンロード</a></li>
                     </ul>
                 </li>
                 <li class="dropdown {{preg_match('/user/',URL::current()) ? 'active':''}}">

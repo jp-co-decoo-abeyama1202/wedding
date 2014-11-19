@@ -22,9 +22,9 @@ CREATE TABLE IF NOT EXISTS `wedding`.`fairs` (
   `start_m` TINYINT(3) UNSIGNED NOT NULL,
   `end_h` TINYINT(3) UNSIGNED NOT NULL,
   `end_m` TINYINT(3) UNSIGNED NOT NULL,
-  `description` VARCHAR(300) NOT NULL,
+  `description` TEXT NOT NULL,
   `target` VARCHAR(50) NOT NULL,
-  `other_description` VARCHAR(300),
+  `other_description` TEXT,
   `tour_flg` TINYINT(1) UNSIGNED DEFAULT 0 NOT NULL,
   `pack_flg` TINYINT(1) UNSIGNED DEFAULT 0 NOT NULL,
   `image_id` INT(10) UNSIGNED DEFAULT 0 NOT NULL,
@@ -38,8 +38,8 @@ CREATE TABLE IF NOT EXISTS `wedding`.`fairs` (
   `reserve_tel_time` TINYINT(3) UNSIGNED,
   `reserve_description` VARCHAR(20),
   `holl_id` TINYINT(3) UNSIGNED NOT NULL,
-  `address` VARCHAR(100) NOT NULL,
-  `parking` VARCHAR(50) NOT NULL,
+  `address` TEXT NOT NULL,
+  `parking` TEXT NOT NULL,
   `tel1_1` VARCHAR(4) NOT NULL,
   `tel1_2` VARCHAR(4) NOT NULL,
   `tel1_3` VARCHAR(4) NOT NULL,
@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS `wedding`.`fair_gnavis` (
     `visible_end_day` TINYINT(3) UNSIGNED NOT NULL,
     `fair_img_alt` VARCHAR(30),
     `fair_catch` VARCHAR(30),
-    `fair_read` VARCHAR(250),
+    `fair_read` TEXT,
     `icon_flg` TINYINT(1) UNSIGNED NOT NULL,
     `program_time_1_h` TINYINT(3) UNSIGNED,
     `program_time_1_m` TINYINT(3) UNSIGNED,
@@ -132,7 +132,7 @@ CREATE TABLE IF NOT EXISTS `wedding`.`fair_gnavis` (
     `gnavi_limit_flg` TINYINT(1) UNSIGNED NOT NULL,
     `just_one_ok_flg` TINYINT(1) UNSIGNED NOT NULL,
     `estimate_bid_flg` TINYINT(1) UNSIGNED NOT NULL,
-    `freeword_search` VARCHAR(512),
+    `freeword_search` TEXT,
     `customer_count` SMALLINT UNSIGNED,
     `reserve_flg` TINYINT(1) UNSIGNED NOT NULL,
     `created_at` DATETIME NOT NULL,
@@ -163,7 +163,7 @@ CREATE TABLE IF NOT EXISTS `wedding`.`fair_mweds` (
     `disp_sub_flg` TINYINT(1) UNSIGNED NOT NULL,
     `etc1_txt` VARCHAR(15),
     `etc2_txt` VARCHAR(15),
-    `plan_txt` VARCHAR(300),
+    `plan_txt` TEXT,
     `priv_txt` VARCHAR(50),
     `reserve` TINYINT(3) UNSIGNED NOT NULL,
     `reserve_txt` VARCHAR(20),
@@ -206,19 +206,19 @@ CREATE TABLE IF NOT EXISTS `wedding`.`fair_mynavis` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `fair_id` INT UNSIGNED NOT NULL,
     `title` VARCHAR(100) NOT NULL,
-    `text` VARCHAR(500),
+    `text` TEXT,
     `image_title` VARCHAR(100),
-    `access_location` VARCHAR(200) NOT NULL,
-    `access_location_note` VARCHAR(500),
-    `access_etc` VARCHAR(100),
+    `access_location` TEXT NOT NULL,
+    `access_location_note` TEXT,
+    `access_etc` TEXT,
     `answer_div` TINYINT(3) UNSIGNED NOT NULL,
     `answer_limit_net_div` TINYINT(3) UNSIGNED,
     `answer_limit_time_net` TINYINT(3) UNSIGNED,
     `answer_limit_tel_div` TINYINT(3) UNSIGNED,
     `answer_limit_time_tel` TINYINT(3) UNSIGNED,
     `target_note` VARCHAR(100),
-    `etc_note` VARCHAR(500),
-    `special_note` VARCHAR(500),
+    `etc_note` TEXT,
+    `special_note` TEXT,
     `plura_flg` TINYINT(1) UNSIGNED,
     `max_open_time_row` TINYINT(3) UNSIGNED,
     `start_hour1` TINYINT(3) UNSIGNED,
@@ -287,7 +287,7 @@ CREATE TABLE IF NOT EXISTS `wedding`.`fair_parks` (
     `end_hour` TINYINT(3) UNSIGNED NOT NULL,
     `end_min` TINYINT(3) UNSIGNED NOT NULL,
     `name` VARCHAR(35) NOT NULL,
-    `description` VARCHAR(115),
+    `description` TEXT,
     `fair_2_flag` TINYINT(1) UNSIGNED NOT NULL,
     `fair_3_flag` TINYINT(1) UNSIGNED NOT NULL,
     `fair_6_flag` TINYINT(1) UNSIGNED NOT NULL,
@@ -299,7 +299,7 @@ CREATE TABLE IF NOT EXISTS `wedding`.`fair_parks` (
     `fair_11_flag` TINYINT(1) UNSIGNED NOT NULL,
     `fair_12_flag` TINYINT(1) UNSIGNED NOT NULL,
     `award_flag` TINYINT(1) UNSIGNED NOT NULL,
-    `award_note` VARCHAR(200),
+    `award_note` TEXT,
     `created_at` DATETIME NOT NULL,
     `updated_at` DATETIME NOT NULL,
     PRIMARY KEY (`id`),
@@ -323,7 +323,7 @@ CREATE TABLE IF NOT EXISTS `wedding`.`fair_park_contents` (
     `start_min_2` TINYINT(3) UNSIGNED,
     `start_hour_3` TINYINT(3) UNSIGNED,
     `start_min_3` TINYINT(3) UNSIGNED,
-    `note` VARCHAR(200),
+    `note` TEXT,
     `created_at` DATETIME NOT NULL,
     `updated_at` DATETIME NOT NULL,
     PRIMARY KEY (`id`),
@@ -338,7 +338,7 @@ CREATE TABLE IF NOT EXISTS `wedding`.`fair_rakutens` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `fair_id` INT UNSIGNED NOT NULL,
     `fair_name` VARCHAR(40) NOT NULL,
-    `introduction` VARCHAR(200),
+    `introduction` TEXT,
     `reserve_online_flag` TINYINT(1) UNSIGNED,
     `reception_cd` TINYINT(3) UNSIGNED,
     `reserve_phone_flag` TINYINT(1) UNSIGNED,
@@ -365,7 +365,7 @@ CREATE TABLE IF NOT EXISTS `wedding`.`fair_rakuten_contents` (
     `kbn_4` VARCHAR(100),
     `event_time_need` SMALLINT(3) UNSIGNED,
     `event_price` MEDIUMINT(6) UNSIGNED,
-    `event_detail` VARCHAR(120),
+    `event_detail` TEXT,
     `event_time_from_hour` TINYINT(3) UNSIGNED,
     `event_time_from_minute` TINYINT(3) UNSIGNED,
     `event_time_to_hour` TINYINT(3) UNSIGNED,
@@ -397,7 +397,7 @@ CREATE TABLE IF NOT EXISTS `wedding`.`fair_sugukons` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `fair_id` INT UNSIGNED NOT NULL,
     `title` VARCHAR(40) NOT NULL,
-    `description` VARCHAR(300) NOT NULL,
+    `description` TEXT NOT NULL,
     `content_1` TINYINT(1) UNSIGNED,
     `content_2` TINYINT(1) UNSIGNED,
     `content_3` TINYINT(1) UNSIGNED,
@@ -473,15 +473,15 @@ CREATE TABLE IF NOT EXISTS `wedding`.`fair_zexys` (
     `pack_yoyaku_kbn` TINYINT(3) UNSIGNED,
     `pack_yoyaku_unit_kbn` TINYINT(3) UNSIGNED,
     `pack_yoyaku_uketsuke_cnt` MEDIUMINT(5) UNSIGNED,
-    `fair_perk_naiyo` VARCHAR(50),
-    `fair_perk_period` VARCHAR(50),
-    `fair_perk_remarks` VARCHAR(50),
-    `free_config_question` VARCHAR(200),
+    `fair_perk_naiyo` TEXT,
+    `fair_perk_period` TEXT,
+    `fair_perk_remarks` TEXT,
+    `free_config_question` TEXT,
     `free_config_answer_must_flg` TINYINT(1) UNSIGNED,
-    `input_address` VARCHAR(100),
-    `parking`  VARCHAR(50),
+    `input_address` TEXT,
+    `parking` TEXT,
     `target_person` VARCHAR(50),
-    `etc` VARCHAR(100),
+    `etc` TEXT,
     `tel_1_1` VARCHAR(4) NOT NULL,
     `tel_2_1` VARCHAR(4) NOT NULL,
     `tel_3_1` VARCHAR(4) NOT NULL,
@@ -521,7 +521,7 @@ CREATE TABLE IF NOT EXISTS `wedding`.`fair_zexy_contents` (
     `entry_ninzu` SMALLINT(3) UNSIGNED,
     `entry_charge` INT UNSIGNED,
     `real_time_yoyaku_unit_kbn` TINYINT(3) UNSIGNED,
-    `detail` VARCHAR(100),
+    `detail` TEXT,
     `created_at` DATETIME NOT NULL,
     `updated_at` DATETIME NOT NULL,
     PRIMARY KEY (`id`),
@@ -553,7 +553,7 @@ CREATE TABLE IF NOT EXISTS `wedding`.`fair_zexy_content_details` (
 -- Table `wedding`.`administrators`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `wedding`.`administrators` (
-  `id` INT UNSIGNED NOT NULL,
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `email` VARCHAR(255) NOT NULL COMMENT 'メールアドレス',
   `password` VARCHAR(255) NOT NULL COMMENT '暗号化済みパスワード',
   `nickname` VARCHAR(100) NOT NULL COMMENT '表示名',
@@ -584,8 +584,10 @@ CREATE TABLE IF NOT EXISTS `wedding`.`site_logins` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `wedding`.`images` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `state` TINYINT(3) UNSIGNED NOT NULL,
+    `mime_type` VARCHAR(30) NOT NULL,
     `image_category_id` INT UNSIGNED NOT NULL COMMENT 'image_categorys.id',
-    `caption` VARCHAR(100) NOT NULL COMMENT 'キャプション',
+    `caption` VARCHAR(100) NOT NULL DEFAULT '' COMMENT 'キャプション',
     `rakuten_id` INT UNSIGNED COMMENT '楽天から発行されるID',
     `zexy_id` INT UNSIGNED COMMENT 'Zexyから発行されるID',
     `zexy_photo_kbn` TINYINT(3) UNSIGNED COMMENT 'ZexyのカテゴリID',
@@ -599,18 +601,34 @@ CREATE TABLE IF NOT EXISTS `wedding`.`images` (
     `created_id` INT UNSIGNED NOT NULL COMMENT '登録者ID',
     `created_at` DATETIME NOT NULL COMMENT '登録時間',
     `updated_at` DATETIME NOT NULL COMMENT '更新時間',
-  PRIMARY KEY (`id`)
+    `deleted_at` DATETIME NOT NULL COMMENT '削除時間',
+    PRIMARY KEY (`id`),
+    UNIQUE (`zexy_id`),
+    UNIQUE (`rakuten_id`),
+    UNIQUE (`mynavi_id`)
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `wedding`.`image_categorys`
+-- Table `wedding`.`image_categories`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `wedding`.`image_categorys` (
-  `id` INT UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `wedding`.`image_categories` (
+  `id` INT UNSIGNED NOT NULL  AUTO_INCREMENT,
   `name` VARCHAR(100) NOT NULL COMMENT 'カテゴリ名',
   `created_at` DATETIME NOT NULL COMMENT '登録時間',
   `updated_at` DATETIME NOT NULL COMMENT '更新時間',
   PRIMARY KEY (`id`)
+) ENGINE = InnoDB;
+INSERT INTO wedding
+
+-- -----------------------------------------------------
+-- Table `wedding`.`image_uploads`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `wedding`.`image_uploads` (
+    `id` INT UNSIGNED NOT NULL,
+    `state` TINYINT(1) UNSIGNED NOT NULL,
+    `created_at` DATETIME NOT NULL COMMENT '登録時間',
+    `updated_at` DATETIME NOT NULL COMMENT '更新時間',
+    PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
